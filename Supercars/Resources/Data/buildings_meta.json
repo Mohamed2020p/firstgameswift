@@ -1,0 +1,184 @@
+{
+ "buildings": [
+  {
+   "name": "building_01",
+   "source": "Building",
+   "size": [
+    28.18,
+    19.598,
+    19.429
+   ],
+   "triangles": 196,
+   "hasShops": true,
+   "roofY": 19.598,
+   "doorLocal": [
+    1.716,
+    0.0,
+    8.758
+   ],
+   "bytes": 168056
+  },
+  {
+   "name": "building_02",
+   "source": "Building_01",
+   "size": [
+    34.05,
+    23.552,
+    19.51
+   ],
+   "triangles": 162,
+   "hasShops": true,
+   "roofY": 23.552,
+   "doorLocal": [
+    -3.424,
+    0.0,
+    9.755
+   ],
+   "bytes": 204248
+  },
+  {
+   "name": "building_03",
+   "source": "Building_02",
+   "size": [
+    40.8,
+    26.339,
+    22.883
+   ],
+   "triangles": 546,
+   "hasShops": true,
+   "roofY": 26.339,
+   "doorLocal": [
+    1.515,
+    0.0,
+    11.285
+   ],
+   "bytes": 324220
+  },
+  {
+   "name": "building_04",
+   "source": "Building_03",
+   "size": [
+    23.193,
+    18.8,
+    17.148
+   ],
+   "triangles": 256,
+   "hasShops": true,
+   "roofY": 18.8,
+   "doorLocal": [
+    0.252,
+    0.0,
+    7.955
+   ],
+   "bytes": 224424
+  },
+  {
+   "name": "building_05",
+   "source": "Building_04",
+   "size": [
+    25.492,
+    18.565,
+    18.153
+   ],
+   "triangles": 162,
+   "hasShops": true,
+   "roofY": 18.565,
+   "doorLocal": [
+    -0.385,
+    0.0,
+    9.076
+   ],
+   "bytes": 203992
+  },
+  {
+   "name": "building_06",
+   "source": "Building_05",
+   "size": [
+    29.793,
+    18.822,
+    19.099
+   ],
+   "triangles": 360,
+   "hasShops": true,
+   "roofY": 18.822,
+   "doorLocal": [
+    2.122,
+    0.0,
+    8.783
+   ],
+   "bytes": 307684
+  },
+  {
+   "name": "building_07",
+   "source": "Building_06",
+   "size": [
+    33.45,
+    14.467,
+    18.674
+   ],
+   "triangles": 204,
+   "hasShops": true,
+   "roofY": 14.467,
+   "doorLocal": [
+    4.124,
+    0.0,
+    7.61
+   ],
+   "bytes": 282176
+  },
+  {
+   "name": "building_08",
+   "source": "Building_07",
+   "size": [
+    24.878,
+    14.801,
+    16.241
+   ],
+   "triangles": 220,
+   "hasShops": true,
+   "roofY": 14.801,
+   "doorLocal": [
+    1.605,
+    0.0,
+    6.981
+   ],
+   "bytes": 162596
+  },
+  {
+   "name": "building_09",
+   "source": "Building_08",
+   "size": [
+    15.515,
+    12.966,
+    13.95
+   ],
+   "triangles": 126,
+   "hasShops": true,
+   "roofY": 12.966,
+   "doorLocal": [
+    3.571,
+    0.0,
+    5.653
+   ],
+   "bytes": 178748
+  },
+  {
+   "name": "building_10",
+   "source": "Building_09",
+   "size": [
+    16.892,
+    11.887,
+    13.864
+   ],
+   "triangles": 236,
+   "hasShops": true,
+   "roofY": 11.887,
+   "doorLocal": [
+    -4.035,
+    0.0,
+    6.092
+   ],
+   "bytes": 228680
+  }
+ ]
+}

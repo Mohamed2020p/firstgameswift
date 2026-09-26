@@ -1,0 +1,24 @@
+{
+ "height": 6.818,
+ "crownRadius": 3.38,
+ "trunkRadius": 0.614,
+ "crownBottomY": 0.885,
+ "crownCenterY": 3.851,
+ "lods": [
+  {
+   "name": "tree_lod0",
+   "triangles": 6227,
+   "maxDistance": 45
+  },
+  {
+   "name": "tree_lod1",
+   "triangles": 1429,
+   "maxDistance": 140
+  },
+  {
+   "name": "tree_lod2",
+   "triangles": 20,
+   "maxDistance": 1000
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+format_version: '26'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: ios
+app:
+  envs:
+  - BITRISE_PROJECT_PATH: Supercars.xcodeproj
+    opts: {is_expand: false}
+  - BITRISE_SCHEME: Supercars
+    opts: {is_expand: false}
+workflows:
+  build_ipa:
+    steps:
+    - git-clone@8: {}
+    - script@1:
+        title: Generate Xcode project (XcodeGen)
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -x
+            brew install xcodegen || true
+            if command -v xcodegen >/dev/null; then xcodegen generate --spec project.yml; else echo "xcodegen unavailable, using committed project"; fi
+            exit 0
+    - script@1:
+        title: Build unsigned IPA
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -exo pipefail
+            ARCHIVE_PATH="/tmp/Supercars.xcarchive"
+            EXPORT_DIR="/tmp/ipa_export"
+            xcodebuild archive -project "$BITRISE_PROJECT_PATH" -scheme "$BITRISE_SCHEME" -configuration Release -destination "generic/platform=iOS" -archivePath "$ARCHIVE_PATH" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" DEVELOPMENT_TEAM=""
+            APP_PATH=$(find "$ARCHIVE_PATH/Products/Applications/" -name "*.app" | head -1)
+            echo "App size: $(du -sh "$APP_PATH")"
+            mkdir -p "$EXPORT_DIR/Payload"
+            cp -r "$APP_PATH" "$EXPORT_DIR/Payload/"
+            cd "$EXPORT_DIR"
+            zip -r "$BITRISE_DEPLOY_DIR/Supercars.ipa" Payload
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - is_compress: 'true'
+meta:
+  bitrise.io:
+    stack: osx-xcode-26.5.x
+    machine_type_id: g2.mac.large

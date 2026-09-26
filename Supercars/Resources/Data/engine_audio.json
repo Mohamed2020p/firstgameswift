@@ -1,0 +1,429 @@
+{
+ "v8": {
+  "layers": [
+   {
+    "layer": "idle",
+    "file": "engine_v8_idle",
+    "refRPM": 1100.0,
+    "minRPM": 600.0,
+    "maxRPM": 2100.0,
+    "loopFrames": 101031,
+    "synthRPM": 1099.98
+   },
+   {
+    "layer": "low",
+    "file": "engine_v8_low",
+    "refRPM": 3150.0,
+    "minRPM": 1900.0,
+    "maxRPM": 4900.0,
+    "loopFrames": 100800,
+    "synthRPM": 3150.0
+   },
+   {
+    "layer": "mid",
+    "file": "engine_v8_mid",
+    "refRPM": 5300.0,
+    "minRPM": 3300.0,
+    "maxRPM": 7950.0,
+    "loopFrames": 101796,
+    "synthRPM": 5302.61
+   },
+   {
+    "layer": "high",
+    "file": "engine_v8_high",
+    "refRPM": 7500.0,
+    "minRPM": 4650.0,
+    "maxRPM": 9500.0,
+    "loopFrames": 101664,
+    "synthRPM": 7495.75
+   }
+  ],
+  "idleRPM": 1100,
+  "redlineRPM": 8800,
+  "decel": {
+   "layer": "decel",
+   "file": "engine_v8_decel",
+   "refRPM": 4600.0,
+   "minRPM": 1500.0,
+   "maxRPM": 9500.0,
+   "loopFrames": 101200,
+   "synthRPM": 4601.74
+  }
+ },
+ "loopHead": 8192,
+ "loopTail": 4096,
+ "loops": {
+  "engine_v8_idle": {
+   "loopFrames": 101031,
+   "channels": 1
+  },
+  "engine_v8_low": {
+   "loopFrames": 100800,
+   "channels": 1
+  },
+  "engine_v8_mid": {
+   "loopFrames": 101796,
+   "channels": 1
+  },
+  "engine_v8_high": {
+   "loopFrames": 101664,
+   "channels": 1
+  },
+  "engine_v8_decel": {
+   "loopFrames": 101200,
+   "channels": 1
+  },
+  "engine_v6_idle": {
+   "loopFrames": 100548,
+   "channels": 1
+  },
+  "engine_v6_low": {
+   "loopFrames": 102258,
+   "channels": 1
+  },
+  "engine_v6_mid": {
+   "loopFrames": 101520,
+   "channels": 1
+  },
+  "engine_v6_high": {
+   "loopFrames": 101213,
+   "channels": 1
+  },
+  "engine_v6_decel": {
+   "loopFrames": 100845,
+   "channels": 1
+  },
+  "engine_v10_idle": {
+   "loopFrames": 101244,
+   "channels": 1
+  },
+  "engine_v10_low": {
+   "loopFrames": 101052,
+   "channels": 1
+  },
+  "engine_v10_mid": {
+   "loopFrames": 101010,
+   "channels": 1
+  },
+  "engine_v10_high": {
+   "loopFrames": 101700,
+   "channels": 1
+  },
+  "engine_v10_decel": {
+   "loopFrames": 101384,
+   "channels": 1
+  },
+  "engine_v12_idle": {
+   "loopFrames": 101430,
+   "channels": 1
+  },
+  "engine_v12_low": {
+   "loopFrames": 100936,
+   "channels": 1
+  },
+  "engine_v12_mid": {
+   "loopFrames": 100940,
+   "channels": 1
+  },
+  "engine_v12_high": {
+   "loopFrames": 101724,
+   "channels": 1
+  },
+  "engine_v12_decel": {
+   "loopFrames": 101340,
+   "channels": 1
+  },
+  "engine_v16_idle": {
+   "loopFrames": 101616,
+   "channels": 1
+  },
+  "engine_v16_low": {
+   "loopFrames": 100713,
+   "channels": 1
+  },
+  "engine_v16_mid": {
+   "loopFrames": 101772,
+   "channels": 1
+  },
+  "engine_v16_high": {
+   "loopFrames": 101500,
+   "channels": 1
+  },
+  "engine_v16_decel": {
+   "loopFrames": 101065,
+   "channels": 1
+  },
+  "tyreSkidAsphalt": {
+   "loopFrames": 88200,
+   "channels": 1
+  },
+  "tyreSkidGrass": {
+   "loopFrames": 88200,
+   "channels": 1
+  },
+  "kerbRumble": {
+   "loopFrames": 44100,
+   "channels": 1
+  },
+  "gravelRoll": {
+   "loopFrames": 88200,
+   "channels": 1
+  },
+  "wind_loop": {
+   "loopFrames": 132300,
+   "channels": 1
+  },
+  "road_loop": {
+   "loopFrames": 88200,
+   "channels": 1
+  },
+  "cityDay": {
+   "loopFrames": 1058400,
+   "channels": 2
+  },
+  "cityNight": {
+   "loopFrames": 1058400,
+   "channels": 2
+  },
+  "suburbDay": {
+   "loopFrames": 1058400,
+   "channels": 2
+  },
+  "suburbNight": {
+   "loopFrames": 1058400,
+   "channels": 2
+  },
+  "houseInterior": {
+   "loopFrames": 1058400,
+   "channels": 2
+  },
+  "garageInterior": {
+   "loopFrames": 1058400,
+   "channels": 2
+  },
+  "menu": {
+   "loopFrames": 1840696,
+   "channels": 2
+  },
+  "drive": {
+   "loopFrames": 1435119,
+   "channels": 2
+  },
+  "race": {
+   "loopFrames": 1209600,
+   "channels": 2
+  },
+  "garage": {
+   "loopFrames": 1693440,
+   "channels": 2
+  },
+  "night": {
+   "loopFrames": 2171077,
+   "channels": 2
+  }
+ },
+ "v6": {
+  "layers": [
+   {
+    "layer": "idle",
+    "file": "engine_v6_idle",
+    "refRPM": 1000.0,
+    "minRPM": 600.0,
+    "maxRPM": 1900.0,
+    "loopFrames": 100548,
+    "synthRPM": 1000.0
+   },
+   {
+    "layer": "low",
+    "file": "engine_v6_low",
+    "refRPM": 2950.0,
+    "minRPM": 1750.0,
+    "maxRPM": 4550.0,
+    "loopFrames": 102258,
+    "synthRPM": 2949.83
+   },
+   {
+    "layer": "mid",
+    "file": "engine_v6_mid",
+    "refRPM": 4900.0,
+    "minRPM": 3050.0,
+    "maxRPM": 7350.0,
+    "loopFrames": 101520,
+    "synthRPM": 4900.0
+   },
+   {
+    "layer": "high",
+    "file": "engine_v6_high",
+    "refRPM": 6950.0,
+    "minRPM": 4300.0,
+    "maxRPM": 8850.0,
+    "loopFrames": 101213,
+    "synthRPM": 6954.01
+   }
+  ],
+  "idleRPM": 1000,
+  "redlineRPM": 8200,
+  "decel": {
+   "layer": "decel",
+   "file": "engine_v6_decel",
+   "refRPM": 4250.0,
+   "minRPM": 1500.0,
+   "maxRPM": 8850.0,
+   "loopFrames": 100845,
+   "synthRPM": 4250.6
+  }
+ },
+ "v10": {
+  "layers": [
+   {
+    "layer": "idle",
+    "file": "engine_v10_idle",
+    "refRPM": 1150.0,
+    "minRPM": 600.0,
+    "maxRPM": 2200.0,
+    "loopFrames": 101244,
+    "synthRPM": 1149.93
+   },
+   {
+    "layer": "low",
+    "file": "engine_v10_low",
+    "refRPM": 3300.0,
+    "minRPM": 2000.0,
+    "maxRPM": 5100.0,
+    "loopFrames": 101052,
+    "synthRPM": 3299.25
+   },
+   {
+    "layer": "mid",
+    "file": "engine_v10_mid",
+    "refRPM": 5500.0,
+    "minRPM": 3400.0,
+    "maxRPM": 8250.0,
+    "loopFrames": 101010,
+    "synthRPM": 5501.04
+   },
+   {
+    "layer": "high",
+    "file": "engine_v10_high",
+    "refRPM": 7800.0,
+    "minRPM": 4850.0,
+    "maxRPM": 9950.0,
+    "loopFrames": 101700,
+    "synthRPM": 7805.31
+   }
+  ],
+  "idleRPM": 1150,
+  "redlineRPM": 9200,
+  "decel": {
+   "layer": "decel",
+   "file": "engine_v10_decel",
+   "refRPM": 4800.0,
+   "minRPM": 1500.0,
+   "maxRPM": 9950.0,
+   "loopFrames": 101384,
+   "synthRPM": 4802.18
+  }
+ },
+ "v12": {
+  "layers": [
+   {
+    "layer": "idle",
+    "file": "engine_v12_idle",
+    "refRPM": 1200.0,
+    "minRPM": 600.0,
+    "maxRPM": 2300.0,
+    "loopFrames": 101430,
+    "synthRPM": 1200.0
+   },
+   {
+    "layer": "low",
+    "file": "engine_v12_low",
+    "refRPM": 3250.0,
+    "minRPM": 1950.0,
+    "maxRPM": 5050.0,
+    "loopFrames": 100936,
+    "synthRPM": 3250.61
+   },
+   {
+    "layer": "mid",
+    "file": "engine_v12_mid",
+    "refRPM": 5400.0,
+    "minRPM": 3350.0,
+    "maxRPM": 8100.0,
+    "loopFrames": 100940,
+    "synthRPM": 5400.0
+   },
+   {
+    "layer": "high",
+    "file": "engine_v12_high",
+    "refRPM": 7650.0,
+    "minRPM": 4750.0,
+    "maxRPM": 9700.0,
+    "loopFrames": 101724,
+    "synthRPM": 7647.4
+   }
+  ],
+  "idleRPM": 1200,
+  "redlineRPM": 9000,
+  "decel": {
+   "layer": "decel",
+   "file": "engine_v12_decel",
+   "refRPM": 4700.0,
+   "minRPM": 1500.0,
+   "maxRPM": 9700.0,
+   "loopFrames": 101340,
+   "synthRPM": 4699.82
+  }
+ },
+ "v16": {
+  "layers": [
+   {
+    "layer": "idle",
+    "file": "engine_v16_idle",
+    "refRPM": 1250.0,
+    "minRPM": 600.0,
+    "maxRPM": 2400.0,
+    "loopFrames": 101616,
+    "synthRPM": 1249.88
+   },
+   {
+    "layer": "low",
+    "file": "engine_v16_low",
+    "refRPM": 3100.0,
+    "minRPM": 1850.0,
+    "maxRPM": 4800.0,
+    "loopFrames": 100713,
+    "synthRPM": 3100.18
+   },
+   {
+    "layer": "mid",
+    "file": "engine_v16_mid",
+    "refRPM": 5150.0,
+    "minRPM": 3200.0,
+    "maxRPM": 7700.0,
+    "loopFrames": 101772,
+    "synthRPM": 5147.86
+   },
+   {
+    "layer": "high",
+    "file": "engine_v16_high",
+    "refRPM": 7300.0,
+    "minRPM": 4550.0,
+    "maxRPM": 9300.0,
+    "loopFrames": 101500,
+    "synthRPM": 7299.31
+   }
+  ],
+  "idleRPM": 1250,
+  "redlineRPM": 8600,
+  "decel": {
+   "layer": "decel",
+   "file": "engine_v16_decel",
+   "refRPM": 4450.0,
+   "minRPM": 1500.0,
+   "maxRPM": 9300.0,
+   "loopFrames": 101065,
+   "synthRPM": 4450.8
+  }
+ }
+}

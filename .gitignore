@@ -1,0 +1,51 @@
+# ---- Xcode / macOS -------------------------------------------------------
+.DS_Store
+build/
+DerivedData/
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+.build/
+.swiftpm/
+Packages/
+Pods/
+Carthage/Build/
+
+# ---- Python --------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# ---- Editors / OS --------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+desktop.ini
+
+# ---- Local tooling / scratch (not shipped) ---------------------------------
+*.whl
+*.tmp
+*.log
+.claude/
+
+# The committed fallback project (Supercars.xcodeproj) and Bitrise config ARE tracked; do not ignore them.
+!Supercars.xcodeproj/
+!Supercars.xcodeproj/project.xcworkspace/
+!Supercars.xcodeproj/xcshareddata/
