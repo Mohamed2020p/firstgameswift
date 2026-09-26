@@ -162,6 +162,7 @@ final class InputManager: ObservableObject {
         let tapShiftDown: Bool = touch.shiftDownTap
         let tapLights: Bool = touch.lightsTap
         let tapPause: Bool = touch.pauseTap
+        let tapMap: Bool = touch.mapTap
         let tapJump: Bool = touch.jumpTap
         let tapCalibrate: Bool = touch.calibrateTap
         touch.interactTap = false
@@ -170,6 +171,7 @@ final class InputManager: ObservableObject {
         touch.shiftDownTap = false
         touch.lightsTap = false
         touch.pauseTap = false
+        touch.mapTap = false
         touch.jumpTap = false
         touch.calibrateTap = false
         if tapCalibrate {
@@ -206,8 +208,10 @@ final class InputManager: ObservableObject {
         let kSpace: Bool = edge("kSpace", key(kb, GCKeyCode.spacebar))
         let kX: Bool = edge("kX", key(kb, GCKeyCode.keyX))
         let kZ: Bool = edge("kZ", key(kb, GCKeyCode.keyZ))
+        let kM: Bool = edge("kM", key(kb, GCKeyCode.keyM))
 
         s.pause = tapPause || padMenuEdge || kEsc
+        s.map = tapMap || kM
         s.interact = tapInteract || padAEdge || kE
         s.cameraToggle = tapCamera || padYEdge || kC
 

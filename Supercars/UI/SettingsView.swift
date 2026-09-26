@@ -71,8 +71,8 @@ struct SettingsView: View {
             Neon.ink.opacity(0.95)
             VStack(spacing: 0) {
                 HStack {
-                    Text("SETTINGS").font(Neon.font(24, .black)).foregroundColor(.white)
-                    Text("c0derz").font(Neon.mono(12, .bold)).foregroundColor(Neon.magenta)
+                    Text("SETTINGS").font(Neon.font(22, .semibold)).tracking(3).foregroundColor(.white)
+                    Text("c0derz").font(Neon.mono(11, .medium)).foregroundColor(Neon.magenta)
                     Spacer()
                     Button(action: { ctx.audio.play(SFX.uiBack, volume: 0.8, rate: 1, position: nil); store.saveNow(); onClose() }) {
                         Label("Done", systemImage: "checkmark")
@@ -301,12 +301,17 @@ struct SettingsView: View {
                 creditRow("Buildings", "Elbolillo", "Sketchfab · CC BY 4.0 · city buildings")
                 creditRow("Mango Tree", "stealth86", "Sketchfab · CC BY 4.0 · trees")
             }
+            card("Pedestrians, vehicles and furniture") {
+                Text("The pedestrians, the taxi, the police truck, the gaming chair and the suburban house are third-party Sketchfab models supplied by the developer; see the original listings for their authors and licences.")
+                    .font(Neon.font(12, .regular)).foregroundColor(Neon.dim)
+            }
             card("Sound") {
                 Text("Every sound effect, engine, ambience and music track in this game is synthesised from scratch (no samples).")
                     .font(Neon.font(13, .regular)).foregroundColor(.white)
             }
             card("Version") {
-                Text("Supercars 1.0  •  built with Bitrise (unsigned IPA)").font(Neon.mono(11, .regular)).foregroundColor(Neon.dim)
+                Text("Supercars 1.1  •  built with Bitrise (unsigned IPA)").font(Neon.mono(11, .regular)).foregroundColor(Neon.dim)
+                    .onTapGesture(count: 7) { ctx.dev?.toggleUnlocked() }
             }
         }
     }
@@ -328,7 +333,6 @@ struct TiltPreview: View {
                     Rectangle().fill(Color.white.opacity(0.5)).frame(width: 2)
                     Circle().fill(Neon.green).frame(width: 20, height: 20)
                         .offset(x: CGFloat(max(-1, min(1, steer.tilt))) * -(geo.size.width * 0.5 - 12))
-                        .shadow(color: Neon.green, radius: 6)
                 }
             }
             .frame(height: 20)

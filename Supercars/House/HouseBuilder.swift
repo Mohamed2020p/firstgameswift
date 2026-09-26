@@ -35,10 +35,19 @@ final class HouseMaterials {
     let safety: SCNMaterial
     let glassExterior: SCNMaterial
     let windowView: SCNMaterial
-    let neonGreen: SCNMaterial
-    let neonMagenta: SCNMaterial
-    let neonWhite: SCNMaterial
-    let neonCyan: SCNMaterial
+    let ledWarm: SCNMaterial
+    let gravel: SCNMaterial
+    let soil: SCNMaterial
+    let pavers: SCNMaterial
+    let bush: SCNMaterial
+    let bushDark: SCNMaterial
+    let curtain: SCNMaterial
+    let bookA: SCNMaterial
+    let bookB: SCNMaterial
+    let bookC: SCNMaterial
+    let brass: SCNMaterial
+    let ledWhite: SCNMaterial
+    let ledCool: SCNMaterial
     let muralLiving: SCNMaterial
     let muralOffice: SCNMaterial
     let muralGarage: SCNMaterial
@@ -68,7 +77,8 @@ final class HouseMaterials {
         return m
     }
 
-    private static func neon(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ name: String, intensity: CGFloat = 1.2) -> SCNMaterial {
+    /// warm / neutral LED strip or lamp: a soft, low emission (no colour wash)
+    private static func led(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ name: String, intensity: CGFloat = 0.55) -> SCNMaterial {
         let m = SCNMaterial()
         m.name = name
         m.lightingModel = SCNMaterial.LightingModel.constant
@@ -76,6 +86,17 @@ final class HouseMaterials {
         m.diffuse.contents = c
         m.emission.contents = c
         m.emission.intensity = intensity
+        return m
+    }
+
+    /// satin brass trim: lit by the scene, no emission
+    private static func metalTrim(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ name: String) -> SCNMaterial {
+        let m = SCNMaterial()
+        m.name = name
+        m.lightingModel = SCNMaterial.LightingModel.blinn
+        m.diffuse.contents = UIColor(red: r, green: g, blue: b, alpha: 1)
+        m.specular.contents = UIColor(white: 0.55, alpha: 1)
+        m.shininess = 0.35
         return m
     }
 
@@ -88,6 +109,7 @@ final class HouseMaterials {
         m.diffuse.wrapT = SCNWrapMode.clamp
         m.emission.contents = img
         m.emission.intensity = glow
+        m.isDoubleSided = true
         m.emission.wrapS = SCNWrapMode.clamp
         m.emission.wrapT = SCNWrapMode.clamp
         return m
@@ -104,9 +126,9 @@ final class HouseMaterials {
         epoxy = HouseMaterials.textured(ProceduralTextures.concreteTiles(size: 512, tiles: 2, seed: 77), "epoxy", tint: 0.9)
         ceiling = HouseMaterials.flat(0.96, 0.96, 0.96, "ceiling")
         fabric = HouseMaterials.flat(0.22, 0.25, 0.31, "fabric")
-        fabricAccent = HouseMaterials.flat(0.07, 0.40, 0.32, "fabricAccent")
+        fabricAccent = HouseMaterials.flat(0.36, 0.38, 0.34, "fabricAccent")
         sheet = HouseMaterials.flat(0.92, 0.92, 0.94, "sheet")
-        blanket = HouseMaterials.flat(0.32, 0.09, 0.42, "blanket")
+        blanket = HouseMaterials.flat(0.46, 0.42, 0.38, "blanket")
         leather = HouseMaterials.flat(0.05, 0.05, 0.06, "leather")
         metal = HouseMaterials.flat(0.62, 0.64, 0.68, "metal")
         black = HouseMaterials.flat(0.02, 0.02, 0.03, "black")
@@ -115,7 +137,7 @@ final class HouseMaterials {
         hedge = HouseMaterials.flat(0.09, 0.28, 0.11, "hedge")
         lawn = HouseMaterials.textured(ProceduralTextures.grass(size: 512, seed: 51), "houseLawn")
         driveway = HouseMaterials.textured(ProceduralTextures.concreteTiles(size: 512, tiles: 4, seed: 21), "driveway", tint: 1.2)
-        rug = HouseMaterials.flat(0.13, 0.05, 0.20, "rug")
+        rug = HouseMaterials.flat(0.24, 0.235, 0.23, "rug")
         safety = HouseMaterials.flat(0.92, 0.75, 0.05, "safety")
 
         let gm = SCNMaterial()
@@ -134,19 +156,28 @@ final class HouseMaterials {
         wv.diffuse.contents = UIColor(red: 0.55, green: 0.75, blue: 0.95, alpha: 1)
         windowView = wv
 
-        neonGreen = HouseMaterials.neon(0.22, 1.0, 0.53, "neonGreen")
-        neonMagenta = HouseMaterials.neon(1.0, 0.17, 0.84, "neonMagenta")
-        neonWhite = HouseMaterials.neon(0.95, 0.97, 1.0, "neonWhite", intensity: 1.0)
-        neonCyan = HouseMaterials.neon(0.17, 0.9, 1.0, "neonCyan")
+        ledWarm = HouseMaterials.led(1.0, 0.84, 0.60, "ledWarm", intensity: 0.6)
+        brass = HouseMaterials.metalTrim(0.66, 0.53, 0.32, "brass")
+        ledWhite = HouseMaterials.led(0.98, 0.96, 0.92, "ledWhite", intensity: 0.75)
+        ledCool = HouseMaterials.led(0.86, 0.92, 1.0, "ledCool", intensity: 0.55)
+        gravel = HouseMaterials.textured(ProceduralTextures.roofGravel(size: 512, seed: 44), "yardGravel", tint: 1.55)
+        soil = HouseMaterials.flat(0.20, 0.15, 0.11, "soil")
+        pavers = HouseMaterials.textured(WTex.pavers(), "housePavers", tint: 1.1)
+        bush = HouseMaterials.flat(0.10, 0.25, 0.11, "bush")
+        bushDark = HouseMaterials.flat(0.07, 0.18, 0.09, "bushDark")
+        curtain = HouseMaterials.flat(0.80, 0.78, 0.72, "curtain")
+        bookA = HouseMaterials.flat(0.42, 0.18, 0.16, "bookA")
+        bookB = HouseMaterials.flat(0.16, 0.22, 0.34, "bookB")
+        bookC = HouseMaterials.flat(0.72, 0.66, 0.52, "bookC")
 
-        muralLiving = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 512, seed: 1), "muralLiving", glow: 0.75)
-        muralOffice = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 400, seed: 2), "muralOffice", glow: 0.8)
-        muralGarage = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 400, seed: 3), "muralGarage", glow: 0.8)
-        muralExterior = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 384, seed: 4), "muralExterior", glow: 0.7)
-        muralBedroom = HouseMaterials.artMaterial(C0derzArt.mural(width: 768, height: 512, seed: 5), "muralBedroom", glow: 0.7)
-        signMat = HouseMaterials.artMaterial(C0derzArt.sign(width: 512, height: 128), "houseSign", glow: 1.3)
-        posterA = HouseMaterials.artMaterial(C0derzArt.poster(seed: 1, text: "V16"), "posterA", glow: 0.4)
-        posterB = HouseMaterials.artMaterial(C0derzArt.poster(seed: 3, text: "GT3"), "posterB", glow: 0.4)
+        muralLiving = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 512, seed: 1), "muralLiving", glow: 0.10)
+        muralOffice = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 400, seed: 2), "muralOffice", glow: 0.10)
+        muralGarage = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 400, seed: 3), "muralGarage", glow: 0.10)
+        muralExterior = HouseMaterials.artMaterial(C0derzArt.mural(width: 1024, height: 384, seed: 4), "muralExterior", glow: 0.06)
+        muralBedroom = HouseMaterials.artMaterial(C0derzArt.mural(width: 768, height: 512, seed: 5), "muralBedroom", glow: 0.10)
+        signMat = HouseMaterials.artMaterial(C0derzArt.sign(width: 512, height: 128), "houseSign", glow: 0.12)
+        posterA = HouseMaterials.artMaterial(C0derzArt.poster(seed: 1, text: "V16"), "posterA", glow: 0.05)
+        posterB = HouseMaterials.artMaterial(C0derzArt.poster(seed: 3, text: "GT3"), "posterB", glow: 0.05)
 
         let gd = SCNMaterial()
         gd.name = "garageDoor"
@@ -181,7 +212,7 @@ final class HouseMaterials {
                 c.setFillColor(WTex.col(0.75, 0.77, 0.80))
                 c.fill(CGRect(x: 0, y: y + 5, width: 64, height: 2))
             }
-            c.setFillColor(WTex.col(0.22, 1.0, 0.53))
+            c.setFillColor(WTex.col(0.66, 0.53, 0.32))
             c.fill(CGRect(x: 0, y: 249, width: 64, height: 6))
         }
     }
@@ -208,6 +239,20 @@ struct HousePlan {
     static let carSpot = Vec2(14, -0.5)
     static let bedHips = Vec3(-13.85, 0.60, -6.0)
     static let bedGetUp = Vec2(-11.8, -6.0)
+
+    /// hard-standing (concrete / slab / driveway) in plot-local coordinates.  The vehicle model reads this through
+    /// `WCityLayout.surface(at:)`; before it existed the whole plot counted as grass, which added ~3 m/s2 of drag and cut the
+    /// tyre grip by more than half, so the Porsche only moved out of the garage with full throttle.
+    static func isPaved(_ lp: Vec2) -> Bool {
+        // villa + garage footprint (interior floors)
+        if lp.x > vx0 - 0.4 && lp.x < gx1 + 0.4 && lp.y > gz0 - 0.4 && lp.y < vz1 + 0.2 { return true }
+        // driveway from the garage door to the street
+        if lp.x > doorX0 - 0.9 && lp.x < doorX1 + 0.9 && lp.y >= vz1 - 0.2 { return true }
+        // front path and back patio
+        if lp.x > -4.6 && lp.x < -1.4 && lp.y > vz1 - 0.2 && lp.y < 12.8 { return true }
+        if lp.x > -14.2 && lp.x < 4.2 && lp.y > -17.2 && lp.y < vz0 + 0.2 { return true }
+        return false
+    }
 }
 
 @MainActor
@@ -369,7 +414,48 @@ final class HouseBuilder {
         buildVillaShell()
         buildVillaInterior()
         buildGarage()
+        buildSignage()
         finish()
+    }
+
+    /// Real 3D "c0derz" lettering in satin brass (no emission): a subtle signature on the west wall, at the entrance, in the living room, the
+    /// office and the garage.
+    private func brassSign(_ text: String, height: Float, at pos: Vec3, yaw: Float, parent: SCNNode) {
+        let holder = SCNNode()
+        holder.name = "brassSign"
+        holder.simdPosition = pos
+        holder.simdEulerAngles = Vec3(0, yaw, 0)
+        let t = SCNText(string: text, extrusionDepth: 0.05)
+        t.font = UIFont.systemFont(ofSize: 4, weight: UIFont.Weight.semibold)
+        t.flatness = 0.06
+        t.chamferRadius = 0
+        t.firstMaterial = mats.brass
+        let n = SCNNode(geometry: t)
+        let bb = n.boundingBox
+        let h: Float = Float(bb.max.y - bb.min.y)
+        if h > 0.0001 {
+            let sc: Float = height / h
+            let cx: Float = Float(bb.min.x + bb.max.x) * 0.5
+            let cy: Float = Float(bb.min.y + bb.max.y) * 0.5
+            n.pivot = SCNMatrix4MakeTranslation(cx, cy, 0)
+            n.simdScale = Vec3(sc, sc, sc)
+            n.castsShadow = false
+            holder.addChildNode(n)
+        }
+        parent.addChildNode(holder)
+    }
+
+    private func buildSignage() {
+        let h: Float = HousePlan.ceilingH
+        // exterior: entrance plaque beside the door and a larger signature on the west wall
+        brassSign("c0derz", height: 0.22, at: Vec3(HousePlan.frontDoorX + 1.55, 1.45, HousePlan.vz1 + 0.12), yaw: 0, parent: extrasNode)
+        brassSign("c0derz", height: 0.9, at: Vec3(HousePlan.vx0 - 0.1, 1.75, -3.0), yaw: -Float.pi * 0.5, parent: extrasNode)
+        // interior
+        brassSign("c0derz", height: 0.55, at: Vec3(-14.62, 2.05, 4.6), yaw: Float.pi * 0.5, parent: interiorNode)
+        brassSign("c0derz", height: 0.35, at: Vec3(-1.4, 2.3, -11.62), yaw: 0, parent: interiorNode)
+        // garage
+        brassSign("c0derz", height: 0.6, at: Vec3(13.8, 2.4, HousePlan.gz0 + 0.42), yaw: 0, parent: garageNode)
+        _ = h
     }
 
     private func finish() {
@@ -406,12 +492,43 @@ final class HouseBuilder {
     // MARK: yard
 
     private func buildYard() {
-        // lawn + driveway (drawn above the world's ground layers)
+        // ground treatment of the plot (drawn above the world's ground layers): gravel and pavers, planting beds, one small lawn patch
+        let gm = ext.mesh(mats.gravel)
+        gm.groundRect(-23.5, -21, -15.3, 17.5, y: 0.006, tile: 5)
+        gm.groundRect(20.5, -21, 23.5, 17.5, y: 0.006, tile: 5)
+        gm.groundRect(-15.3, -21, 20.5, -12.2, y: 0.006, tile: 5)
+        gm.groundRect(6.2, -12.2, 20.5, -10.3, y: 0.006, tile: 5)
+        gm.groundRect(-15.3, 8.3, 20.5, 17.5, y: 0.006, tile: 5)
+        // the only lawn: a small, tidy patch left of the entrance path
         let lm = ext.mesh(mats.lawn)
-        lm.groundRect(-23.5, -21, 23.5, 17.5, y: 0.012, tile: 6)
+        lm.groundRect(-14.6, 10.6, -5.6, 14.6, y: 0.009, tile: 4)
         let dm = ext.mesh(mats.driveway)
-        dm.groundRect(HousePlan.doorX0 - 0.6, 8.1, HousePlan.doorX1 + 0.6, 18.2, y: 0.02, tile: 3)
-        dm.groundRect(-4.4, 8.1, -1.6, 12.5, y: 0.02, tile: 3)      // path to the front door
+        dm.groundRect(HousePlan.doorX0 - 0.6, 8.1, HousePlan.doorX1 + 0.6, 18.2, y: 0.010, tile: 3)
+        let pm = ext.mesh(mats.pavers)
+        pm.groundRect(-4.4, 8.1, -1.6, 12.5, y: 0.012, tile: 2)      // path to the front door
+        pm.groundRect(-5.2, 12.5, -0.8, 13.3, y: 0.012, tile: 2)     // landing
+        // planting beds (soil with shrubs) along the west wall and the front garden wall
+        boxRange(ext, mats.soil, x0: -22.6, x1: -20.6, y0: 0, y1: 0.14, z0: -19.5, z1: 12.5)
+        boxRange(ext, mats.soil, x0: -23.0, x1: -5.0, y0: 0, y1: 0.14, z0: 14.4, z1: 15.1)
+        boxRange(ext, mats.soil, x0: 18.5, x1: 22.5, y0: 0, y1: 0.14, z0: 8.4, z1: 15.1)
+        // shrubs (rounded, two greens)
+        let bm = ext.mesh(mats.bush)
+        let bd = ext.mesh(mats.bushDark)
+        var bi: Int = 0
+        for z in stride(from: Float(-18), through: Float(11), by: 3.4) {
+            let jitter: Float = wHash01(bi, 3, 17) * 0.5
+            let r: Float = 0.55 + wHash01(bi, 5, 17) * 0.25
+            (bi % 2 == 0 ? bm : bd).blob(center: Vec3(-21.6 + jitter, 0.14 + r * 0.7, z), radius: Vec3(r, r * 0.8, r), rings: 5, segments: 8, u: 0.5, v: 0.5)
+            bi += 1
+        }
+        for x in stride(from: Float(-21), through: Float(-6), by: 2.4) {
+            let r: Float = 0.42 + wHash01(bi, 9, 17) * 0.2
+            (bi % 2 == 0 ? bd : bm).blob(center: Vec3(x, 0.14 + r * 0.7, 14.75), radius: Vec3(r * 1.1, r * 0.75, r * 0.7), rings: 5, segments: 8, u: 0.5, v: 0.5)
+            bi += 1
+        }
+        for x in [Float(19.2), Float(20.4), Float(21.6)] {
+            bm.blob(center: Vec3(x, 0.75, 12.0 + (x - 19.2) * 0.9), radius: Vec3(0.55, 0.6, 0.55), rings: 5, segments: 8, u: 0.5, v: 0.5)
+        }
         // hedges + collider boxes
         let hedgeH: Float = 1.3
         boxRange(ext, mats.hedge, x0: -23.5, x1: -22.9, y0: 0, y1: hedgeH, z0: -21, z1: 15)
@@ -425,11 +542,13 @@ final class HouseBuilder {
         boxRange(ext, mats.plasterDark, x0: -23.5, x1: -4.8, y0: 0, y1: wallH, z0: 15.2, z1: 15.6)
         boxRange(ext, mats.plasterDark, x0: -1.2, x1: 10.6, y0: 0, y1: wallH, z0: 15.2, z1: 15.6)
         boxRange(ext, mats.plasterDark, x0: 17.4, x1: 23.5, y0: 0, y1: wallH, z0: 15.2, z1: 15.6)
-        // neon posts at the driveway
-        boxRange(ext, mats.neonGreen, x0: 10.4, x1: 10.6, y0: 0.2, y1: 1.0, z0: 15.0, z1: 15.2)
-        boxRange(ext, mats.neonMagenta, x0: 17.4, x1: 17.6, y0: 0.2, y1: 1.0, z0: 15.0, z1: 15.2)
-        // patio slab behind the house
-        floorRect(ext, mats.driveway, x0: -14, x1: 4, z0: -17, z1: -12.2, y: 0.022, tile: 3)
+        // low bollard lights on the driveway (soft warm lens, dark steel body)
+        for bx in [Float(10.3), Float(17.5)] {
+            boxRange(ext, mats.plasterDark, x0: bx, x1: bx + 0.16, y0: 0, y1: 0.55, z0: 15.0, z1: 15.16)
+            boxRange(ext, mats.ledWarm, x0: bx + 0.02, x1: bx + 0.14, y0: 0.55, y1: 0.62, z0: 15.02, z1: 15.14)
+        }
+        // patio behind the house: large pavers
+        floorRect(ext, mats.pavers, x0: -14, x1: 4, z0: -17, z1: -12.2, y: 0.011, tile: 3)
         // planters + a bench
         for (i, x) in [Float(-8), Float(-5.5), Float(1.5), Float(4)].enumerated() {
             _ = i
@@ -466,20 +585,20 @@ final class HouseBuilder {
         wallBox(ext, mats.plaster, x0: x0, x1: x1, z0: z1 - t, z1: z1, y0: 0, y1: h, collide: true)              // front
         // roof slab + edge
         boxRange(ext, mats.plasterDark, x0: x0 - 0.7, x1: x1 + 0.2, y0: h, y1: h + 0.32, z0: z0 - 0.7, z1: z1 + 0.9)
-        boxRange(ext, mats.neonMagenta, x0: x0 - 0.7, x1: x1 + 0.2, y0: h + 0.26, y1: h + 0.32, z0: z1 + 0.85, z1: z1 + 0.9)
+        boxRange(ext, mats.brass, x0: x0 - 0.7, x1: x1 + 0.2, y0: h + 0.24, y1: h + 0.29, z0: z1 + 0.86, z1: z1 + 0.9)
         // upper volume (decorative second storey)
         boxRange(ext, mats.cladding, x0: -14.2, x1: -5.6, y0: h + 0.32, y1: h + 3.1, z0: -7.5, z1: 4.5)
         boxRange(ext, mats.plaster, x0: -14.3, x1: -5.5, y0: h + 3.1, y1: h + 3.3, z0: -7.6, z1: 4.6)
         // long window band on the upper volume (front and side)
         boxRange(ext, mats.glassExterior, x0: -13.4, x1: -6.4, y0: h + 0.9, y1: h + 2.3, z0: 4.5, z1: 4.53)
-        boxRange(ext, mats.neonGreen, x0: -13.4, x1: -6.4, y0: h + 0.86, y1: h + 0.9, z0: 4.5, z1: 4.54)
+        boxRange(ext, mats.metal, x0: -13.4, x1: -6.4, y0: h + 0.86, y1: h + 0.9, z0: 4.5, z1: 4.54)
         boxRange(ext, mats.glassExterior, x0: -5.6, x1: -5.57, y0: h + 0.9, y1: h + 2.3, z0: -6, z1: 3)
         // front door assembly
         let dx = HousePlan.frontDoorX
         boxRange(ext, mats.cladding, x0: dx - 1.05, x1: dx + 1.05, y0: 0, y1: 2.75, z0: z1, z1: z1 + 0.18)
         boxRange(ext, mats.woodDark, x0: dx - 0.55, x1: dx + 0.55, y0: 0, y1: 2.35, z0: z1 + 0.18, z1: z1 + 0.24)
         boxRange(ext, mats.metal, x0: dx + 0.35, x1: dx + 0.42, y0: 0.9, y1: 1.15, z0: z1 + 0.24, z1: z1 + 0.3)
-        boxRange(ext, mats.neonWhite, x0: dx - 0.9, x1: dx + 0.9, y0: 2.78, y1: 2.84, z0: z1 + 0.1, z1: z1 + 0.16)
+        boxRange(ext, mats.ledWhite, x0: dx - 0.7, x1: dx + 0.7, y0: 2.78, y1: 2.82, z0: z1 + 0.1, z1: z1 + 0.14)
         // canopy over the door
         boxRange(ext, mats.plasterDark, x0: dx - 1.6, x1: dx + 1.6, y0: 2.85, y1: 3.0, z0: z1, z1: z1 + 1.8)
         // wooden slat wall left of the door
@@ -496,8 +615,8 @@ final class HouseBuilder {
         }
         // big c0derz mural on the west wall
         art(ext, mats.muralExterior, facing: Vec2(-1, 0), at: x0 - 0.02, from: -9, to: 2.5, y0: 0.35, y1: 3.0)
-        // neon strip along the west wall top
-        boxRange(ext, mats.neonGreen, x0: x0 - 0.05, x1: x0 - 0.02, y0: 3.05, y1: 3.1, z0: -9.5, z1: 3.2)
+        // slim steel cap along the west wall top
+        boxRange(ext, mats.metal, x0: x0 - 0.05, x1: x0 - 0.02, y0: 3.05, y1: 3.09, z0: -9.5, z1: 3.2)
         // chimney-like tower with the neon sign at the front corner
         boxRange(ext, mats.cladding, x0: 4.6, x1: 6.3, y0: 0, y1: h + 1.4, z0: 8.0, z1: 8.6)
         art(ext, mats.signMat, facing: Vec2(0, 1), at: 8.62, from: 4.7, to: 6.2, y0: h - 0.6, y1: h + 0.55)
@@ -512,11 +631,11 @@ final class HouseBuilder {
         let iz0: Float = HousePlan.vz0 + 0.24
         let iz1: Float = HousePlan.vz1 - 0.24
         // floors + ceiling
-        floorRect(inn, mats.woodFloor, x0: ix0, x1: ix1, z0: iz0, z1: iz1, y: 0.004, tile: 2.5)
-        floorRect(inn, mats.tile, x0: -4, x1: 0, z0: 1, z1: iz1, y: 0.008, tile: 2)
-        floorRect(inn, mats.tile, x0: 0, x1: ix1, z0: 1, z1: iz1, y: 0.008, tile: 2)
-        floorRect(inn, mats.tile, x0: -7, x1: -3, z0: -8, z1: -1.5, y: 0.008, tile: 2)
-        floorRect(inn, mats.epoxy, x0: -7, x1: -3, z0: iz0, z1: -8, y: 0.008, tile: 2)
+        floorRect(inn, mats.woodFloor, x0: ix0, x1: ix1, z0: iz0, z1: iz1, y: 0.016, tile: 2.5)
+        floorRect(inn, mats.tile, x0: -4, x1: 0, z0: 1, z1: iz1, y: 0.019, tile: 2)
+        floorRect(inn, mats.tile, x0: 0, x1: ix1, z0: 1, z1: iz1, y: 0.019, tile: 2)
+        floorRect(inn, mats.tile, x0: -7, x1: -3, z0: -8, z1: -1.5, y: 0.019, tile: 2)
+        floorRect(inn, mats.epoxy, x0: -7, x1: -3, z0: iz0, z1: -8, y: 0.019, tile: 2)
         ceilingRect(inn, mats.ceiling, x0: ix0, x1: ix1, z0: iz0, z1: iz1, y: h)
         // partitions
         let t: Float = 0.16
@@ -530,8 +649,8 @@ final class HouseBuilder {
         // east wall (shared with the garage): kitchen door to the garage
         wallRunZ(inn, mats.plaster, x: ix1 + 0.12, z0: iz0, z1: iz1, t: 0.24, top: h, gaps: [(3.8, 5.0)])
         // skirting + LED strips
-        boxRange(inn, mats.neonGreen, x0: ix0, x1: ix0 + 0.03, y0: h - 0.12, y1: h - 0.08, z0: 1.2, z1: iz1 - 0.2)
-        boxRange(inn, mats.neonMagenta, x0: ix0 + 0.03, x1: ix1 - 0.2, y0: h - 0.12, y1: h - 0.08, z0: iz0, z1: iz0 + 0.03)
+        boxRange(inn, mats.ledWarm, x0: ix0, x1: ix0 + 0.03, y0: h - 0.12, y1: h - 0.08, z0: 1.2, z1: iz1 - 0.2)
+        boxRange(inn, mats.brass, x0: ix0 + 0.03, x1: ix1 - 0.2, y0: h - 0.12, y1: h - 0.08, z0: iz0, z1: iz0 + 0.03)
 
         buildLiving(h)
         buildHall(h)
@@ -557,16 +676,26 @@ final class HouseBuilder {
         tvNode = tv
         boxRange(inn, mats.black, x0: -10.62, x1: -8.38, y0: 0.94, y1: 2.16, z0: 1.07, z1: 1.09)
         // rug, sofa (L shape), coffee table
-        floorRect(inn, mats.rug, x0: -12.3, x1: -6.7, z0: 2.4, z1: 6.4, y: 0.014, tile: 4)
+        floorRect(inn, mats.rug, x0: -12.3, x1: -6.7, z0: 2.4, z1: 6.4, y: 0.026, tile: 4)
         furniture(inn, mats.fabric, -9.5, 6.0, 3.6, 1.0, y0: 0.0, y1: 0.45)
         boxRange(inn, mats.fabric, x0: -11.3, x1: -7.7, y0: 0.45, y1: 0.95, z0: 6.4, z1: 6.62)
         furniture(inn, mats.fabric, -11.6, 4.6, 1.0, 2.0, y0: 0.0, y1: 0.45)
         boxRange(inn, mats.fabricAccent, x0: -10.9, x1: -10.2, y0: 0.45, y1: 0.8, z0: 5.3, z1: 5.9)
         furniture(inn, mats.woodDark, -9.5, 3.7, 1.5, 0.8, y0: 0.0, y1: 0.42)
-        boxRange(inn, mats.neonCyan, x0: -10.2, x1: -8.8, y0: 0.42, y1: 0.44, z0: 3.4, z1: 3.5)
+        boxRange(inn, mats.ledCool, x0: -10.2, x1: -8.8, y0: 0.42, y1: 0.44, z0: 3.4, z1: 3.5)
+        // framed prints, curtains, a side table with books
+        art(inn, mats.posterB, facing: Vec2(0, 1), at: 1.1, from: -13.4, to: -12.3, y0: 1.2, y1: 2.5)
+        art(inn, mats.posterA, facing: Vec2(0, 1), at: 1.1, from: -6.9, to: -5.8, y0: 1.2, y1: 2.5)
+        for wx in [Float(-13.9), Float(-9.3)] {
+            boxRange(inn, mats.curtain, x0: wx - 0.15, x1: wx + 0.25, y0: 0.05, y1: 3.0, z0: 7.36, z1: 7.62)
+            boxRange(inn, mats.curtain, x0: wx + 3.05, x1: wx + 3.45, y0: 0.05, y1: 3.0, z0: 7.36, z1: 7.62)
+        }
+        furniture(inn, mats.woodDark, -12.6, 6.0, 0.6, 0.6, y0: 0, y1: 0.5)
+        boxRange(inn, mats.bookA, x0: -12.85, x1: -12.35, y0: 0.5, y1: 0.55, z0: 5.8, z1: 6.1)
+        boxRange(inn, mats.bookC, x0: -12.8, x1: -12.4, y0: 0.55, y1: 0.59, z0: 5.85, z1: 6.05)
         // floor lamp + plants
         boxRange(inn, mats.metal, x0: -6.8, x1: -6.7, y0: 0, y1: 1.7, z0: 6.9, z1: 7.0)
-        boxRange(inn, mats.neonWhite, x0: -7.0, x1: -6.5, y0: 1.7, y1: 1.95, z0: 6.75, z1: 7.15)
+        boxRange(inn, mats.ledWhite, x0: -7.0, x1: -6.5, y0: 1.7, y1: 1.95, z0: 6.75, z1: 7.15)
         circleCollider(cx: -6.75, cz: 6.95, r: 0.25, height: 2)
         for p in [(-14.2, 7.2), (-14.2, 1.6), (-4.6, 1.5)] {
             boxRange(inn, mats.plasterDark, x0: Float(p.0) - 0.3, x1: Float(p.0) + 0.3, y0: 0, y1: 0.45, z0: Float(p.1) - 0.3, z1: Float(p.1) + 0.3)
@@ -574,7 +703,7 @@ final class HouseBuilder {
             circleCollider(cx: Float(p.0), cz: Float(p.1), r: 0.35, height: 1.5)
         }
         addLight(Vec3(-9.5, h - 0.3, 4.3), color: UIColor(red: 1.0, green: 0.82, blue: 0.6, alpha: 1), intensity: 520, range: 11, garage: false)
-        addLight(Vec3(-12.5, h - 0.4, 2.5), color: UIColor(red: 0.6, green: 1.0, blue: 0.8, alpha: 1), intensity: 260, range: 8, garage: false)
+        addLight(Vec3(-12.5, h - 0.4, 2.5), color: UIColor(red: 1.0, green: 0.90, blue: 0.75, alpha: 1), intensity: 240, range: 8, garage: false)
     }
 
     private func buildHall(_ h: Float) {
@@ -583,7 +712,7 @@ final class HouseBuilder {
         art(inn, mats.posterA, facing: Vec2(-1, 0), at: -0.09, from: 1.9, to: 2.9, y0: 1.2, y1: 2.5)
         boxRange(inn, mats.cladding, x0: HousePlan.frontDoorX - 0.55, x1: HousePlan.frontDoorX + 0.55, y0: 0, y1: 2.35, z0: 7.7, z1: 7.76)
         boxRange(inn, mats.metal, x0: HousePlan.frontDoorX - 0.4, x1: HousePlan.frontDoorX - 0.33, y0: 0.9, y1: 1.15, z0: 7.66, z1: 7.7)
-        boxRange(inn, mats.neonGreen, x0: HousePlan.frontDoorX - 0.6, x1: HousePlan.frontDoorX + 0.6, y0: 2.4, y1: 2.44, z0: 7.7, z1: 7.76)
+        boxRange(inn, mats.ledWarm, x0: HousePlan.frontDoorX - 0.6, x1: HousePlan.frontDoorX + 0.6, y0: 2.4, y1: 2.44, z0: 7.7, z1: 7.76)
         addLight(Vec3(-2, h - 0.3, 4.5), color: UIColor(red: 1.0, green: 0.86, blue: 0.68, alpha: 1), intensity: 420, range: 9, garage: false)
     }
 
@@ -592,7 +721,7 @@ final class HouseBuilder {
         furniture(inn, mats.cabinet, 3.0, 7.35, 5.0, 0.7, y0: 0, y1: 0.9)
         boxRange(inn, mats.counter, x0: 0.5, x1: 5.5, y0: 0.9, y1: 0.95, z0: 7.0, z1: 7.72)
         boxRange(inn, mats.cabinet, x0: 0.5, x1: 5.5, y0: 1.6, y1: 2.4, z0: 7.44, z1: 7.72)
-        boxRange(inn, mats.neonWhite, x0: 0.5, x1: 5.5, y0: 1.56, y1: 1.6, z0: 7.44, z1: 7.7)
+        boxRange(inn, mats.ledWhite, x0: 0.5, x1: 5.5, y0: 1.56, y1: 1.6, z0: 7.44, z1: 7.7)
         furniture(inn, mats.metal, 5.3, 1.75, 0.9, 0.8, y0: 0, y1: 1.95)
         // island + stools
         furniture(inn, mats.cabinet, 2.4, 3.2, 2.6, 1.0, y0: 0, y1: 0.92)
@@ -601,8 +730,14 @@ final class HouseBuilder {
             boxRange(inn, mats.leather, x0: sx - 0.18, x1: sx + 0.18, y0: 0.6, y1: 0.66, z0: 4.05, z1: 4.4)
             boxRange(inn, mats.metal, x0: sx - 0.03, x1: sx + 0.03, y0: 0, y1: 0.6, z0: 4.2, z1: 4.25)
         }
+        // pendant lamps over the island
+        for px in [Float(1.5), Float(2.4), Float(3.3)] {
+            boxRange(inn, mats.black, x0: px - 0.01, x1: px + 0.01, y0: 2.2, y1: HousePlan.ceilingH, z0: 3.19, z1: 3.21)
+            boxRange(inn, mats.metal, x0: px - 0.14, x1: px + 0.14, y0: 2.05, y1: 2.2, z0: 3.06, z1: 3.34)
+            boxRange(inn, mats.ledWarm, x0: px - 0.1, x1: px + 0.1, y0: 2.03, y1: 2.05, z0: 3.1, z1: 3.3)
+        }
         // door to the garage (inside the kitchen, east wall): a dark frame
-        boxRange(inn, mats.neonMagenta, x0: 5.7, x1: 5.76, y0: 2.3, y1: 2.34, z0: 3.8, z1: 5.0)
+        boxRange(inn, mats.brass, x0: 5.7, x1: 5.76, y0: 2.3, y1: 2.34, z0: 3.8, z1: 5.0)
         addLight(Vec3(3, h - 0.3, 4.5), color: UIColor(red: 1.0, green: 0.95, blue: 0.85, alpha: 1), intensity: 520, range: 10, garage: false)
     }
 
@@ -614,19 +749,21 @@ final class HouseBuilder {
         boxRange(inn, mats.sheet, x0: -14.8, x1: -14.2, y0: 0.55, y1: 0.7, z0: -6.7, z1: -5.9)
         boxRange(inn, mats.sheet, x0: -14.8, x1: -14.2, y0: 0.55, y1: 0.7, z0: -6.1, z1: -5.3)
         boxRange(inn, mats.cladding, x0: -14.76, x1: -14.6, y0: 0.2, y1: 1.5, z0: -7.2, z1: -4.8)
-        boxRange(inn, mats.neonMagenta, x0: -14.6, x1: -14.57, y0: 1.5, y1: 1.54, z0: -7.2, z1: -4.8)
+        boxRange(inn, mats.brass, x0: -14.6, x1: -14.57, y0: 1.5, y1: 1.54, z0: -7.2, z1: -4.8)
+        // bench at the foot of the bed, curtains at the wall
+        furniture(inn, mats.fabric, -11.6, -6.0, 0.5, 1.8, y0: 0, y1: 0.42)
         // nightstands with lamps
         furniture(inn, mats.woodDark, -14.4, -7.6, 0.6, 0.6, y0: 0, y1: 0.5)
         furniture(inn, mats.woodDark, -14.4, -4.4, 0.6, 0.6, y0: 0, y1: 0.5)
-        boxRange(inn, mats.neonWhite, x0: -14.55, x1: -14.25, y0: 0.5, y1: 0.75, z0: -7.75, z1: -7.45)
-        boxRange(inn, mats.neonWhite, x0: -14.55, x1: -14.25, y0: 0.5, y1: 0.75, z0: -4.55, z1: -4.25)
+        boxRange(inn, mats.ledWhite, x0: -14.55, x1: -14.25, y0: 0.5, y1: 0.75, z0: -7.75, z1: -7.45)
+        boxRange(inn, mats.ledWhite, x0: -14.55, x1: -14.25, y0: 0.5, y1: 0.75, z0: -4.55, z1: -4.25)
         // feature wall behind the bed (north wall) + wardrobe
         art(inn, mats.muralBedroom, facing: Vec2(0, 1), at: -11.74, from: -14.0, to: -8.0, y0: 0.6, y1: 2.9)
         furniture(inn, mats.cabinet, -10.5, 0.5, 3.4, 0.9, y0: 0, y1: 2.5)
         art(inn, mats.posterB, facing: Vec2(-1, 0), at: -7.09, from: -9.6, to: -8.4, y0: 1.2, y1: 2.8)
-        floorRect(inn, mats.rug, x0: -12.2, x1: -8.6, z0: -8.0, z1: -4.0, y: 0.014, tile: 4)
-        boxRange(inn, mats.neonGreen, x0: -14.7, x1: -7.2, y0: h - 0.12, y1: h - 0.08, z0: -11.7, z1: -11.66)
-        addLight(Vec3(-11, h - 0.3, -6), color: UIColor(red: 1.0, green: 0.62, blue: 0.85, alpha: 1), intensity: 430, range: 10, garage: false)
+        floorRect(inn, mats.rug, x0: -12.2, x1: -8.6, z0: -8.0, z1: -4.0, y: 0.026, tile: 4)
+        boxRange(inn, mats.ledWarm, x0: -14.7, x1: -7.2, y0: h - 0.12, y1: h - 0.08, z0: -11.7, z1: -11.66)
+        addLight(Vec3(-11, h - 0.3, -6), color: UIColor(red: 1.0, green: 0.80, blue: 0.62, alpha: 1), intensity: 400, range: 10, garage: false)
     }
 
     private func buildBathroom(_ h: Float) {
@@ -634,8 +771,10 @@ final class HouseBuilder {
         boxRange(inn, mats.metal, x0: -3.75, x1: -3.6, y0: 0.95, y1: 1.1, z0: -7.0, z1: -6.6)
         boxRange(inn, mats.black, x0: -3.16, x1: -3.14, y0: 1.1, y1: 2.2, z0: -7.4, z1: -6.2)
         furniture(inn, mats.counter, -6.4, -4.0, 0.7, 0.5, y0: 0, y1: 0.42)
+        boxRange(inn, mats.sheet, x0: -3.3, x1: -3.18, y0: 1.3, y1: 1.9, z0: -5.3, z1: -4.9)
+        boxRange(inn, mats.metal, x0: -3.16, x1: -3.13, y0: 1.9, y1: 1.94, z0: -5.4, z1: -4.8)
         furniture(inn, mats.glassExterior, -5.2, -7.1, 1.6, 1.6, y0: 0, y1: 2.1)
-        boxRange(inn, mats.neonCyan, x0: -6.9, x1: -3.1, y0: h - 0.12, y1: h - 0.08, z0: -1.6, z1: -1.55)
+        boxRange(inn, mats.ledCool, x0: -6.9, x1: -3.1, y0: h - 0.12, y1: h - 0.08, z0: -1.6, z1: -1.55)
         addLight(Vec3(-5, h - 0.3, -4.5), color: UIColor(red: 0.85, green: 0.95, blue: 1.0, alpha: 1), intensity: 380, range: 7, garage: false)
     }
 
@@ -661,20 +800,69 @@ final class HouseBuilder {
             boxRange(inn, mats.black, x0: mx - 0.55, x1: mx + 0.55, y0: 0.82, y1: 1.44, z0: -11.4, z1: -11.35)
             boxRange(inn, mats.black, x0: mx - 0.04, x1: mx + 0.04, y0: 0.76, y1: 0.85, z0: -11.4, z1: -11.3)
         }
-        // gaming chair
-        boxRange(inn, mats.leather, x0: 1.0, x1: 1.8, y0: 0.45, y1: 0.55, z0: -9.7, z1: -9.0)
-        boxRange(inn, mats.leather, x0: 1.05, x1: 1.75, y0: 0.55, y1: 1.35, z0: -9.05, z1: -8.95)
-        boxRange(inn, mats.neonMagenta, x0: 1.05, x1: 1.75, y0: 1.35, y1: 1.4, z0: -9.05, z1: -8.95)
-        boxRange(inn, mats.metal, x0: 1.35, x1: 1.45, y0: 0, y1: 0.45, z0: -9.4, z1: -9.3)
-        circleCollider(cx: 1.4, cz: -9.35, r: 0.4, height: 1.4)
+        // rug under the desk and chair, desk mat, keyboard, mouse, desk lamp, PC tower
+        floorRect(inn, mats.rug, x0: -1.4, x1: 4.2, z0: -11.2, z1: -7.6, y: 0.026, tile: 4)
+        boxRange(inn, mats.black, x0: -0.1, x1: 2.9, y0: 0.76, y1: 0.765, z0: -10.98, z1: -10.42)
+        boxRange(inn, mats.cabinet, x0: 0.75, x1: 1.75, y0: 0.765, y1: 0.79, z0: -10.78, z1: -10.5)
+        boxRange(inn, mats.black, x0: 2.05, x1: 2.17, y0: 0.765, y1: 0.795, z0: -10.72, z1: -10.56)
+        boxRange(inn, mats.black, x0: 3.0, x1: 3.38, y0: 0, y1: 0.46, z0: -11.32, z1: -10.72)
+        boxRange(inn, mats.ledWhite, x0: 3.0, x1: 3.03, y0: 0.20, y1: 0.36, z0: -11.05, z1: -10.99)
+        boxRange(inn, mats.metal, x0: 3.1, x1: 3.26, y0: 0.76, y1: 0.80, z0: -11.2, z1: -11.04)
+        boxRange(inn, mats.metal, x0: 3.16, x1: 3.2, y0: 0.80, y1: 1.18, z0: -11.15, z1: -11.11)
+        boxRange(inn, mats.ledWarm, x0: 3.05, x1: 3.32, y0: 1.18, y1: 1.24, z0: -11.22, z1: -11.02)
+        // the gaming chair (your gaming_chair.glb): pulled out from the desk and turned a little, as if someone just stood up
+        var chairPlaced: Bool = false
+        if let chair = try? ctx.assets.model("gaming_chair") {
+            let holder = SCNNode()
+            holder.name = "gamingChair"
+            holder.simdPosition = Vec3(1.55, 0.026, -9.55)
+            holder.simdEulerAngles = Vec3(0, Float.pi + 0.42, 0)        // the model faces +Z, the desk is toward -Z
+            holder.addChildNode(chair)
+            chair.enumerateHierarchy { (n: SCNNode, _: UnsafeMutablePointer<ObjCBool>) in
+                if n.geometry != nil {
+                    n.categoryBitMask = 8
+                    n.castsShadow = false
+                }
+            }
+            interiorNode.addChildNode(holder)
+            chairPlaced = true
+        }
+        if !chairPlaced {
+            boxRange(inn, mats.leather, x0: 1.0, x1: 1.8, y0: 0.45, y1: 0.55, z0: -9.7, z1: -9.0)
+            boxRange(inn, mats.leather, x0: 1.05, x1: 1.75, y0: 0.55, y1: 1.35, z0: -9.05, z1: -8.95)
+            boxRange(inn, mats.metal, x0: 1.35, x1: 1.45, y0: 0, y1: 0.45, z0: -9.4, z1: -9.3)
+        }
+        circleCollider(cx: 1.55, cz: -9.55, r: 0.42, height: 1.3)
+        // bookshelf on the west side of the office: four boards with books
+        for (bi, by) in [Float(0.35), Float(0.95), Float(1.55), Float(2.1)].enumerated() {
+            boxRange(inn, mats.woodDark, x0: -2.5, x1: -2.08, y0: by, y1: by + 0.03, z0: -9.5, z1: -4.0)
+            var z: Float = -9.4
+            var k: Int = 0
+            while z < -4.2 {
+                let bw: Float = 0.04 + wHash01(k, bi, 41) * 0.05
+                let bh: Float = 0.20 + wHash01(k, bi, 43) * 0.10
+                let pick: Int = Int(wHash01(k, bi, 47) * 3)
+                let mat: SCNMaterial = pick == 0 ? mats.bookA : (pick == 1 ? mats.bookB : mats.bookC)
+                boxRange(inn, mat, x0: -2.46, x1: -2.14, y0: by + 0.03, y1: by + 0.03 + bh, z0: z, z1: z + bw)
+                z += bw + 0.005
+                k += 1
+                if k % 9 == 0 { z += 0.25 }
+            }
+        }
+        // potted plant and a floor lamp in the corners
+        boxRange(inn, mats.plasterDark, x0: 4.15, x1: 4.75, y0: 0, y1: 0.45, z0: -11.2, z1: -10.6)
+        inn.mesh(mats.bush).blob(center: Vec3(4.45, 0.95, -10.9), radius: Vec3(0.42, 0.55, 0.42), rings: 6, segments: 10, u: 0.5, v: 0.5)
+        circleCollider(cx: 4.45, cz: -10.9, r: 0.32, height: 1.4)
+        boxRange(inn, mats.metal, x0: 4.3, x1: 4.36, y0: 0, y1: 1.6, z0: -8.1, z1: -8.04)
+        boxRange(inn, mats.ledWarm, x0: 4.15, x1: 4.5, y0: 1.6, y1: 1.85, z0: -8.22, z1: -7.92)
         // server rack
         furniture(inn, mats.black, 5.2, -6.5, 0.8, 1.0, y0: 0, y1: 2.1)
-        boxRange(inn, mats.neonGreen, x0: 4.78, x1: 4.8, y0: 0.4, y1: 1.9, z0: -6.75, z1: -6.7)
-        boxRange(inn, mats.neonMagenta, x0: 4.78, x1: 4.8, y0: 0.5, y1: 1.7, z0: -6.4, z1: -6.36)
-        // shelf
+        boxRange(inn, mats.ledWhite, x0: 4.78, x1: 4.8, y0: 1.5, y1: 1.56, z0: -6.75, z1: -6.7)
+        boxRange(inn, mats.ledWhite, x0: 4.78, x1: 4.8, y0: 1.2, y1: 1.26, z0: -6.75, z1: -6.7)
+        // shelf back panel
         boxRange(inn, mats.woodWarm, x0: -2.7, x1: -2.5, y0: 0, y1: 2.2, z0: -9.5, z1: -4.0)
-        collider(cx: -2.6, cz: -6.75, sx: 0.3, sz: 5.5, kind: ColliderKind.prop, height: 2.2)
-        addLight(Vec3(1.5, h - 0.3, -6), color: UIColor(red: 0.7, green: 1.0, blue: 0.85, alpha: 1), intensity: 460, range: 10, garage: false)
+        collider(cx: -2.4, cz: -6.75, sx: 0.7, sz: 5.5, kind: ColliderKind.prop, height: 2.2)
+        addLight(Vec3(1.5, h - 0.3, -6), color: UIColor(red: 1.0, green: 0.94, blue: 0.84, alpha: 1), intensity: 440, range: 10, garage: false)
         addLight(Vec3(0.5, h - 0.3, 0.0), color: UIColor(red: 1.0, green: 0.9, blue: 0.75, alpha: 1), intensity: 300, range: 9, garage: false)
     }
 
@@ -710,13 +898,13 @@ final class HouseBuilder {
         wallBox(ext, mats.plasterDark, x0: HousePlan.doorX0, x1: HousePlan.doorX1, z0: gz1 - t, z1: gz1, y0: HousePlan.doorH, y1: gh, collide: false)
         wallBox(ext, mats.plasterDark, x0: gx0 - 0.24, x1: gx0, z0: gz0, z1: gz1, y0: HousePlan.ceilingH, y1: gh, collide: false)   // garage wall above the villa roof
         boxRange(ext, mats.plasterDark, x0: gx0 - 0.1, x1: gx1 + 0.5, y0: gh, y1: gh + 0.3, z0: gz0 - 0.5, z1: gz1 + 0.9)
-        boxRange(ext, mats.neonGreen, x0: gx0 - 0.1, x1: gx1 + 0.5, y0: gh + 0.24, y1: gh + 0.3, z0: gz1 + 0.85, z1: gz1 + 0.9)
+        boxRange(ext, mats.ledWarm, x0: gx0 - 0.1, x1: gx1 + 0.5, y0: gh + 0.24, y1: gh + 0.3, z0: gz1 + 0.85, z1: gz1 + 0.9)
         // exterior art: mural left of the door, sign above the door, frame around the opening
         art(ext, mats.muralGarage, facing: Vec2(0, 1), at: gz1 + 0.01, from: gx0 + 0.3, to: HousePlan.doorX0 - 0.3, y0: 0.4, y1: 3.4)
         art(ext, mats.signMat, facing: Vec2(0, 1), at: gz1 + 0.01, from: 11.9, to: 16.1, y0: 3.2, y1: 4.0)
-        boxRange(ext, mats.neonMagenta, x0: HousePlan.doorX0 - 0.1, x1: HousePlan.doorX0, y0: 0, y1: HousePlan.doorH, z0: gz1, z1: gz1 + 0.06)
-        boxRange(ext, mats.neonMagenta, x0: HousePlan.doorX1, x1: HousePlan.doorX1 + 0.1, y0: 0, y1: HousePlan.doorH, z0: gz1, z1: gz1 + 0.06)
-        boxRange(ext, mats.neonGreen, x0: HousePlan.doorX0 - 0.1, x1: HousePlan.doorX1 + 0.1, y0: HousePlan.doorH, y1: HousePlan.doorH + 0.08, z0: gz1, z1: gz1 + 0.06)
+        boxRange(ext, mats.brass, x0: HousePlan.doorX0 - 0.1, x1: HousePlan.doorX0, y0: 0, y1: HousePlan.doorH, z0: gz1, z1: gz1 + 0.06)
+        boxRange(ext, mats.brass, x0: HousePlan.doorX1, x1: HousePlan.doorX1 + 0.1, y0: 0, y1: HousePlan.doorH, z0: gz1, z1: gz1 + 0.06)
+        boxRange(ext, mats.ledWarm, x0: HousePlan.doorX0 - 0.1, x1: HousePlan.doorX1 + 0.1, y0: HousePlan.doorH, y1: HousePlan.doorH + 0.08, z0: gz1, z1: gz1 + 0.06)
 
         // roll-up door (animated node, no collider so the car can leave)
         let panel = SCNBox(width: CGFloat(HousePlan.doorX1 - HousePlan.doorX0), height: CGFloat(HousePlan.doorH), length: 0.08, chamferRadius: 0)
@@ -728,18 +916,18 @@ final class HouseBuilder {
         garageDoorNode = dn
 
         // interior
-        floorRect(gar, mats.epoxy, x0: gx0, x1: gx1 - t, z0: gz0 + t, z1: gz1, y: 0.004, tile: 3)
+        floorRect(gar, mats.epoxy, x0: gx0, x1: gx1 - t, z0: gz0 + t, z1: gz1, y: 0.016, tile: 3)
         ceilingRect(gar, mats.ceiling, x0: gx0, x1: gx1 - t, z0: gz0 + t, z1: gz1 - 0.1, y: ch)
         // inner faces of the walls (dark panels) so the interior is closed from the inside
         boxRange(gar, mats.plasterDark, x0: gx1 - t - 0.04, x1: gx1 - t, y0: 0, y1: ch, z0: gz0 + t, z1: gz1)
         boxRange(gar, mats.plasterDark, x0: gx0, x1: gx1 - t, y0: 0, y1: ch, z0: gz0 + t, z1: gz0 + t + 0.04)
         // safety stripes + showroom ring around the car spot
         let cs = HousePlan.carSpot
-        floorRect(gar, mats.safety, x0: cs.x - 2.6, x1: cs.x - 2.45, z0: cs.y - 3.4, z1: cs.y + 3.4, y: 0.012, tile: 1)
-        floorRect(gar, mats.safety, x0: cs.x + 2.45, x1: cs.x + 2.6, z0: cs.y - 3.4, z1: cs.y + 3.4, y: 0.012, tile: 1)
+        floorRect(gar, mats.safety, x0: cs.x - 2.6, x1: cs.x - 2.45, z0: cs.y - 3.4, z1: cs.y + 3.4, y: 0.024, tile: 1)
+        floorRect(gar, mats.safety, x0: cs.x + 2.45, x1: cs.x + 2.6, z0: cs.y - 3.4, z1: cs.y + 3.4, y: 0.024, tile: 1)
         let ring = SCNNode()
         let rm = WMeshSet()
-        let neonRing = mats.neonGreen
+        let neonRing = mats.ledWarm
         let rmesh = rm.mesh(neonRing)
         let segs = 40
         for i in 0..<segs {
@@ -748,7 +936,7 @@ final class HouseBuilder {
             let d0 = Vec2(cosf(a0), sinf(a0))
             let d1 = Vec2(cosf(a1), sinf(a1))
             let c = Vec2(cs.x, cs.y)
-            rmesh.groundQuad(c + d0 * 3.4, c + d1 * 3.4, c + d1 * 3.5, c + d0 * 3.5, y: 0.02, tile: 1)
+            rmesh.groundQuad(c + d0 * 3.4, c + d1 * 3.4, c + d1 * 3.5, c + d0 * 3.5, y: 0.03, tile: 1)
         }
         ring.geometry = rm.makeGeometry()
         ring.categoryBitMask = 8
@@ -760,7 +948,7 @@ final class HouseBuilder {
         boxRange(gar, mats.cabinet, x0: 6.3, x1: 7.6, y0: 0, y1: 1.0, z0: -9.8, z1: -6.2)
         collider(cx: 6.95, cz: -8.0, sx: 1.3, sz: 3.6, kind: ColliderKind.prop, height: 1.0)
         boxRange(gar, mats.woodWarm, x0: 6.3, x1: 7.6, y0: 1.0, y1: 1.06, z0: -9.8, z1: -6.2)
-        boxRange(gar, mats.neonMagenta, x0: 6.2, x1: 6.24, y0: 1.5, y1: 1.56, z0: -9.8, z1: -6.2)
+        boxRange(gar, mats.brass, x0: 6.2, x1: 6.24, y0: 1.5, y1: 1.56, z0: -9.8, z1: -6.2)
         // tyre rack on the east wall
         for i in 0..<4 {
             for j in 0..<3 {
@@ -778,7 +966,7 @@ final class HouseBuilder {
         collider(cx: cs.x + 2.2, cz: cs.y - 1.5, sx: 0.3, sz: 0.3, kind: ColliderKind.prop, height: 3)
         // customise console (a kiosk with a glowing screen)
         boxRange(gar, mats.black, x0: 8.3, x1: 9.1, y0: 0, y1: 1.1, z0: 1.0, z1: 1.5)
-        boxRange(gar, mats.neonCyan, x0: 8.35, x1: 9.05, y0: 0.75, y1: 1.05, z0: 1.5, z1: 1.52)
+        boxRange(gar, mats.ledCool, x0: 8.35, x1: 9.05, y0: 0.75, y1: 1.05, z0: 1.5, z1: 1.52)
         collider(cx: 8.7, cz: 1.25, sx: 0.8, sz: 0.5, kind: ColliderKind.prop, height: 1.1)
         // workbench along the shared wall
         furniture(gar, mats.woodWarm, 6.8, -3.6, 0.8, 2.6, y0: 0.85, y1: 0.92)
@@ -787,8 +975,8 @@ final class HouseBuilder {
         // ceiling strip lights
         for i in 0..<4 {
             let z: Float = -7 + Float(i) * 4.2
-            boxRange(gar, mats.neonWhite, x0: 9.0, x1: 9.3, y0: ch - 0.05, y1: ch, z0: z, z1: z + 2.2)
-            boxRange(gar, mats.neonWhite, x0: 17.6, x1: 17.9, y0: ch - 0.05, y1: ch, z0: z, z1: z + 2.2)
+            boxRange(gar, mats.ledWhite, x0: 9.0, x1: 9.3, y0: ch - 0.05, y1: ch, z0: z, z1: z + 2.2)
+            boxRange(gar, mats.ledWhite, x0: 17.6, x1: 17.9, y0: ch - 0.05, y1: ch, z0: z, z1: z + 2.2)
             addLight(Vec3(9.15, ch - 0.3, z + 1.1), color: UIColor(red: 0.85, green: 0.92, blue: 1.0, alpha: 1), intensity: 320, range: 9, garage: true)
         }
         // showroom spots (only on while the customise screen is open)

@@ -7,9 +7,36 @@ import simd
 // ambient light, fog colour and the image based lighting environment. Everything sits inside the fog start distance so the
 // dome is never fogged out.
 
+enum WeatherKind: Int, CaseIterable {
+    case clear, overcast, fog, rain
+
+    var title: String {
+        switch self {
+        case .clear: return "Clear"
+        case .overcast: return "Overcast"
+        case .fog: return "Fog"
+        case .rain: return "Rain"
+        }
+    }
+}
+
 @MainActor
 final class WSky {
     static let domeRadius: Float = 430
+
+    // weather (smoothed toward the targets of the selected kind)
+    private(set) var weather: WeatherKind = WeatherKind.clear
+    private var overcast: Float = 0
+    private var fogAmount: Float = 0
+    private var rainAmount: Float = 0
+    private var overcastTarget: Float = 0
+    private var fogTarget: Float = 0
+    private var rainTarget: Float = 0
+    private var lastOvercast: Float = -1
+    private var baseFogStart: Float = 480
+    private var baseFogEnd: Float = 1000
+    private let rainNode = SCNNode()
+    private var rainSystem: SCNParticleSystem? = nil
 
     /// follows the camera; parent of dome / stars / clouds / sun / moon
     let root = SCNNode()
@@ -193,8 +220,67 @@ final class WSky {
             sunL.shadowCascadeCount = g.shadows == ShadowQuality.low ? 2 : 3
         }
         let end: Float = max(700, 1000 * g.drawDistance)
-        scene.fogEndDistance = CGFloat(end)
-        scene.fogStartDistance = 480
+        baseFogEnd = end
+        baseFogStart = 480
+        scene.fogEndDistance = CGFloat(end * (1 - 0.65 * fogAmount))
+        scene.fogStartDistance = CGFloat(baseFogStart * (1 - 0.85 * fogAmount))
+        rainSystem?.birthRate = CGFloat(g.particles ? 2600 * rainAmount : 0)
+    }
+
+    // MARK: weather
+
+    func setWeather(_ w: WeatherKind) {
+        weather = w
+        switch w {
+        case .clear:
+            overcastTarget = 0
+            fogTarget = 0
+            rainTarget = 0
+        case .overcast:
+            overcastTarget = 0.8
+            fogTarget = 0.12
+            rainTarget = 0
+        case .fog:
+            overcastTarget = 0.55
+            fogTarget = 1
+            rainTarget = 0
+        case .rain:
+            overcastTarget = 1
+            fogTarget = 0.35
+            rainTarget = 1
+        }
+        if rainSystem == nil { buildRain() }
+    }
+
+    private func buildRain() {
+        let img: UIImage = WTex.render(16, 64, opaque: false) { c in
+            c.clear(CGRect(x: 0, y: 0, width: 16, height: 64))
+            c.setFillColor(UIColor(white: 1, alpha: 0.55).cgColor)
+            c.fill(CGRect(x: 7, y: 4, width: 2, height: 56))
+        }
+        let ps = SCNParticleSystem()
+        ps.particleImage = img
+        ps.birthRate = 0
+        ps.particleLifeSpan = 0.9
+        ps.particleLifeSpanVariation = 0.15
+        ps.emitterShape = SCNBox(width: 46, height: 0.2, length: 46, chamferRadius: 0)
+        ps.birthLocation = SCNParticleBirthLocation.volume
+        ps.birthDirection = SCNParticleBirthDirection.constant
+        ps.emittingDirection = SCNVector3(0, -1, 0)
+        ps.spreadingAngle = 3
+        ps.particleVelocity = 34
+        ps.particleVelocityVariation = 6
+        ps.particleSize = 0.42
+        ps.particleColor = UIColor(white: 0.92, alpha: 0.55)
+        ps.isAffectedByGravity = false
+        ps.orientationMode = SCNParticleOrientationMode.billboardYAligned
+        ps.blendMode = SCNParticleBlendMode.alpha
+        ps.isLightingEnabled = false
+        ps.isLocal = false
+        rainSystem = ps
+        rainNode.simdPosition = Vec3(0, 16, 0)
+        rainNode.addParticleSystem(ps)
+        root.addChildNode(rainNode)
     }
 
     // MARK: per frame
@@ -214,12 +300,27 @@ final class WSky {
         let twi: Float = max(0, 1 - day - nightF)
         night = 1 - WSky.smooth(-0.04, 0.20, e)
 
-        let zenith: Vec3 = Vec3(0.18, 0.42, 0.85) * day + Vec3(0.02, 0.03, 0.09) * nightF + Vec3(0.22, 0.30, 0.55) * twi
-        let horizon: Vec3 = Vec3(0.66, 0.80, 0.96) * day + Vec3(0.05, 0.07, 0.14) * nightF + Vec3(1.0, 0.56, 0.32) * twi
+        // weather eases in and out
+        overcast = damp(overcast, overcastTarget, 0.35, max(dt, 0.0001))
+        fogAmount = damp(fogAmount, fogTarget, 0.35, max(dt, 0.0001))
+        rainAmount = damp(rainAmount, rainTarget, 0.45, max(dt, 0.0001))
+        let oc: Float = overcast
+        var zenith: Vec3 = Vec3(0.18, 0.42, 0.85) * day + Vec3(0.02, 0.03, 0.09) * nightF + Vec3(0.22, 0.30, 0.55) * twi
+        var horizon: Vec3 = Vec3(0.66, 0.80, 0.96) * day + Vec3(0.05, 0.07, 0.14) * nightF + Vec3(1.0, 0.56, 0.32) * twi
+        if oc > 0.001 {
+            let gz: Float = simd_dot(zenith, Vec3(0.30, 0.59, 0.11)) * 0.9
+            let gh: Float = simd_dot(horizon, Vec3(0.30, 0.59, 0.11)) * 0.95
+            zenith = zenith + (Vec3(gz, gz, gz * 1.03) - zenith) * (oc * 0.78)
+            horizon = horizon + (Vec3(gh, gh, gh * 1.02) - horizon) * (oc * 0.78)
+        }
         horizonColor = horizon
+        scene.fogEndDistance = CGFloat(baseFogEnd * (1 - 0.65 * fogAmount))
+        scene.fogStartDistance = CGFloat(baseFogStart * (1 - 0.85 * fogAmount))
+        if let rs = rainSystem { rs.birthRate = CGFloat(rainAmount > 0.02 ? 2600 * rainAmount : 0) }
 
-        if abs(t - lastSkyT) > 0.04 || lastSkyT < -50 {
+        if abs(t - lastSkyT) > 0.04 || lastSkyT < -50 || abs(oc - lastOvercast) > 0.02 {
             lastSkyT = t
+            lastOvercast = oc
             domeMat.diffuse.contents = WSky.gradientImage(zenith: zenith, horizon: horizon)
             let cloudTint: Vec3 = Vec3(1.0, 1.0, 1.0) * day + Vec3(0.10, 0.12, 0.20) * nightF + Vec3(1.0, 0.65, 0.55) * twi
             cloudMat.multiply.contents = UIColor(red: CGFloat(cloudTint.x), green: CGFloat(cloudTint.y), blue: CGFloat(cloudTint.z), alpha: 1)
@@ -251,8 +352,8 @@ final class WSky {
         sunDisc.opacity = CGFloat(sunGlow)
 
         // light: sun by day, moon by night (same node so there is only one shadow caster)
-        let sunI: Float = 1500 * WSky.smooth(0.0, 0.28, e)
-        let moonI: Float = 330 * WSky.smooth(0.0, 0.28, moonDir.y)
+        let sunI: Float = 1500 * WSky.smooth(0.0, 0.28, e) * (1 - 0.72 * oc)
+        let moonI: Float = 330 * WSky.smooth(0.0, 0.28, moonDir.y) * (1 - 0.5 * oc)
         let useSun: Bool = sunI >= moonI
         let toLight: Vec3 = useSun ? dir : moonDir
         sunLight.simdPosition = focus + toLight * 140
@@ -269,7 +370,7 @@ final class WSky {
 
         // ambient: sky coloured
         let amb: Vec3 = (zenith * 0.5 + horizon * 0.5)
-        let ambI: Float = 95 + 330 * day + 170 * twi
+        let ambI: Float = (95 + 330 * day + 170 * twi) * (1 + 0.3 * oc)
         ambL.color = UIColor(red: CGFloat(min(1, amb.x * 1.15 + 0.10)), green: CGFloat(min(1, amb.y * 1.15 + 0.10)),
                              blue: CGFloat(min(1, amb.z * 1.15 + 0.14)), alpha: 1)
         ambL.intensity = CGFloat(ambI)

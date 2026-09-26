@@ -29,6 +29,7 @@ struct InputState {
     var interact: Bool = false
     var cameraToggle: Bool = false
     var pause: Bool = false
+    var map: Bool = false
     var horn: Bool = false
     var lights: Bool = false
 }
@@ -47,7 +48,7 @@ enum HapticKind {
 enum TouchZoneKind: Hashable {
     case wheel, leftButton, rightButton, gas, brake, handbrake
     case shiftUp, shiftDown, camera, lights, horn, interact, pause
-    case jump, run, calibrate, prompt
+    case jump, run, calibrate, prompt, map
     case joystick, look
 }
 
@@ -94,6 +95,7 @@ final class TouchInput: ObservableObject {
     var shiftDownTap: Bool = false
     var lightsTap: Bool = false
     var pauseTap: Bool = false
+    var mapTap: Bool = false
     var jumpTap: Bool = false
     var calibrateTap: Bool = false
 
@@ -116,6 +118,7 @@ final class TouchInput: ObservableObject {
         shiftDownTap = false
         lightsTap = false
         pauseTap = false
+        mapTap = false
         jumpTap = false
         calibrateTap = false
     }

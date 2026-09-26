@@ -1,0 +1,451 @@
+{
+ "archetypes": {
+  "christie": {
+   "file": "npc_christie",
+   "height": 1.871,
+   "hipHeight": 1.091,
+   "female": true,
+   "weight": 1.0,
+   "triangles": 10205,
+   "slots": [
+    {
+     "material": "top",
+     "palette": "clothes"
+    },
+    {
+     "material": "shoes",
+     "palette": "shoes"
+    },
+    {
+     "material": "hair",
+     "palette": "hair"
+    }
+   ]
+  },
+  "jamal": {
+   "file": "npc_jamal",
+   "height": 1.723,
+   "hipHeight": 0.953,
+   "female": false,
+   "weight": 1.0,
+   "triangles": 7066,
+   "slots": [
+    {
+     "material": "top",
+     "palette": "clothes"
+    },
+    {
+     "material": "bottom",
+     "palette": "clothes"
+    },
+    {
+     "material": "shoes",
+     "palette": "shoes"
+    },
+    {
+     "material": "hat",
+     "palette": "hat"
+    }
+   ]
+  },
+  "peter": {
+   "file": "npc_peter",
+   "height": 1.885,
+   "hipHeight": 1.064,
+   "female": false,
+   "weight": 1.0,
+   "triangles": 6913,
+   "slots": [
+    {
+     "material": "top",
+     "palette": "clothes"
+    },
+    {
+     "material": "bottom",
+     "palette": "clothes"
+    },
+    {
+     "material": "shoes",
+     "palette": "shoes"
+    },
+    {
+     "material": "hat",
+     "palette": "hat"
+    }
+   ]
+  },
+  "suit": {
+   "file": "npc_suit",
+   "height": 1.808,
+   "hipHeight": 0.941,
+   "female": false,
+   "weight": 1.0,
+   "triangles": 7957,
+   "slots": [
+    {
+     "material": "top",
+     "palette": "suit"
+    },
+    {
+     "material": "hair",
+     "palette": "hair"
+    }
+   ]
+  },
+  "biker": {
+   "file": "npc_biker",
+   "height": 1.869,
+   "hipHeight": 1.019,
+   "female": false,
+   "weight": 1.0,
+   "triangles": 7994,
+   "slots": [
+    {
+     "material": "top",
+     "palette": "clothes"
+    },
+    {
+     "material": "shoes",
+     "palette": "shoes"
+    },
+    {
+     "material": "hat",
+     "palette": "hat"
+    }
+   ]
+  },
+  "casual": {
+   "file": "npc_casual",
+   "height": 1.821,
+   "hipHeight": 1.066,
+   "female": true,
+   "weight": 1.0,
+   "triangles": 3899,
+   "slots": []
+  }
+ },
+ "palettes": {
+  "clothes": [
+   {
+    "name": "black",
+    "rgb": [
+     0.1,
+     0.1,
+     0.11
+    ]
+   },
+   {
+    "name": "white",
+    "rgb": [
+     0.93,
+     0.93,
+     0.92
+    ]
+   },
+   {
+    "name": "navy",
+    "rgb": [
+     0.1,
+     0.16,
+     0.36
+    ]
+   },
+   {
+    "name": "green",
+    "rgb": [
+     0.16,
+     0.42,
+     0.24
+    ]
+   },
+   {
+    "name": "gray",
+    "rgb": [
+     0.48,
+     0.49,
+     0.52
+    ]
+   },
+   {
+    "name": "red",
+    "rgb": [
+     0.68,
+     0.14,
+     0.14
+    ]
+   },
+   {
+    "name": "blue",
+    "rgb": [
+     0.2,
+     0.42,
+     0.78
+    ]
+   },
+   {
+    "name": "mustard",
+    "rgb": [
+     0.78,
+     0.6,
+     0.16
+    ]
+   },
+   {
+    "name": "teal",
+    "rgb": [
+     0.12,
+     0.52,
+     0.52
+    ]
+   },
+   {
+    "name": "brown",
+    "rgb": [
+     0.4,
+     0.27,
+     0.18
+    ]
+   },
+   {
+    "name": "beige",
+    "rgb": [
+     0.78,
+     0.7,
+     0.55
+    ]
+   },
+   {
+    "name": "maroon",
+    "rgb": [
+     0.4,
+     0.1,
+     0.18
+    ]
+   },
+   {
+    "name": "olive",
+    "rgb": [
+     0.4,
+     0.42,
+     0.2
+    ]
+   },
+   {
+    "name": "purple",
+    "rgb": [
+     0.42,
+     0.24,
+     0.55
+    ]
+   }
+  ],
+  "suit": [
+   {
+    "name": "charcoal",
+    "rgb": [
+     0.16,
+     0.17,
+     0.19
+    ]
+   },
+   {
+    "name": "navy",
+    "rgb": [
+     0.09,
+     0.13,
+     0.28
+    ]
+   },
+   {
+    "name": "black",
+    "rgb": [
+     0.07,
+     0.07,
+     0.08
+    ]
+   },
+   {
+    "name": "gray",
+    "rgb": [
+     0.38,
+     0.39,
+     0.41
+    ]
+   },
+   {
+    "name": "brown",
+    "rgb": [
+     0.3,
+     0.2,
+     0.14
+    ]
+   },
+   {
+    "name": "burgundy",
+    "rgb": [
+     0.32,
+     0.09,
+     0.14
+    ]
+   }
+  ],
+  "hair": [
+   {
+    "name": "black",
+    "rgb": [
+     0.06,
+     0.05,
+     0.05
+    ]
+   },
+   {
+    "name": "dark brown",
+    "rgb": [
+     0.16,
+     0.1,
+     0.07
+    ]
+   },
+   {
+    "name": "brown",
+    "rgb": [
+     0.28,
+     0.17,
+     0.1
+    ]
+   },
+   {
+    "name": "blond",
+    "rgb": [
+     0.72,
+     0.58,
+     0.32
+    ]
+   },
+   {
+    "name": "auburn",
+    "rgb": [
+     0.42,
+     0.16,
+     0.09
+    ]
+   },
+   {
+    "name": "gray",
+    "rgb": [
+     0.55,
+     0.55,
+     0.56
+    ]
+   },
+   {
+    "name": "white",
+    "rgb": [
+     0.85,
+     0.85,
+     0.84
+    ]
+   }
+  ],
+  "shoes": [
+   {
+    "name": "black",
+    "rgb": [
+     0.08,
+     0.08,
+     0.08
+    ]
+   },
+   {
+    "name": "white",
+    "rgb": [
+     0.88,
+     0.88,
+     0.86
+    ]
+   },
+   {
+    "name": "brown",
+    "rgb": [
+     0.3,
+     0.19,
+     0.11
+    ]
+   },
+   {
+    "name": "gray",
+    "rgb": [
+     0.42,
+     0.42,
+     0.44
+    ]
+   },
+   {
+    "name": "navy",
+    "rgb": [
+     0.1,
+     0.14,
+     0.3
+    ]
+   },
+   {
+    "name": "red",
+    "rgb": [
+     0.6,
+     0.12,
+     0.12
+    ]
+   }
+  ],
+  "hat": [
+   {
+    "name": "black",
+    "rgb": [
+     0.09,
+     0.09,
+     0.1
+    ]
+   },
+   {
+    "name": "gray",
+    "rgb": [
+     0.45,
+     0.46,
+     0.48
+    ]
+   },
+   {
+    "name": "navy",
+    "rgb": [
+     0.1,
+     0.15,
+     0.34
+    ]
+   },
+   {
+    "name": "red",
+    "rgb": [
+     0.66,
+     0.13,
+     0.13
+    ]
+   },
+   {
+    "name": "khaki",
+    "rgb": [
+     0.6,
+     0.54,
+     0.36
+    ]
+   },
+   {
+    "name": "white",
+    "rgb": [
+     0.9,
+     0.9,
+     0.88
+    ]
+   }
+  ]
+ }
+}

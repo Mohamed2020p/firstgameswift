@@ -86,7 +86,9 @@ final class WRig {
     private var rootParentRot: simd_quatf = wIdentityQuat
     private var rootParentPos: Vec3 = Vec3(0, 0, 0)
 
-    static func stripped(_ n: String) -> String {
+    static func stripped(_ name: String) -> String {
+        var n: String = name
+        if n.hasPrefix("mixamorig:") { n = String(n.dropFirst(10)) }
         guard let us = n.lastIndex(of: "_") else { return n }
         let tail = n[n.index(after: us)...]
         if tail.isEmpty { return n }

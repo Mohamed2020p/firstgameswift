@@ -9,12 +9,17 @@
 /* Begin PBXBuildFile section */
 		08ADF83C60FFF1FA136B958D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59EAE87E8FFB5458F8EC8D9C /* QuartzCore.framework */; };
 		0C186FB3B59EDA7B9CCE3557 /* Props.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96408852C821A111AF16A6E3 /* Props.swift */; };
+		0C1E0DB90FBCA0915381E34B /* WorldGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0045440056D997842F55E17C /* WorldGrid.swift */; };
 		0D3BBA7AC777BA91DBADCF60 /* Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF9D416A9269D218C47EF36 /* Interaction.swift */; };
+		1175A4208F2FBEB4876EE260 /* NPCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1495BEE51B1DBCEEBB43BE40 /* NPCManager.swift */; };
 		12686A79ED6787A1A9AAA4B9 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AF563F974EDD2C780DD634F /* CoreHaptics.framework */; };
 		1417892FFDACD06623793857 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 055F757A61336FF8E8B312AB /* Models */; };
 		1EAC4EAA012E54D6DAAC1464 /* HUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5840384BE5C589070E70E9 /* HUDView.swift */; };
 		20531ECE37CC5E01B3C64A79 /* GLBLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 366F69DACFC7458344A27414 /* GLBLoader.swift */; };
+		220B7B3A3669D84DBDF6E0FD /* NPCBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CF0E4E08166397731420CD /* NPCBrain.swift */; };
 		23E7A1E7E3F44E6D811714CB /* Textures in Resources */ = {isa = PBXBuildFile; fileRef = CC7FFE8B569D5F5E9874C360 /* Textures */; };
+		28168E46718EE4EF0F9937E3 /* Waypoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037FB8179736D3616BB111F8 /* Waypoints.swift */; };
+		28BCC8FD6B179096B5A320B4 /* NPCPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B42DAC2310E1FD6A218968 /* NPCPool.swift */; };
 		2A9C721B9196052BBCF0684D /* RaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6E5B9DAE13548BFB6D77BF /* RaceManager.swift */; };
 		2AA014DA3132D66FD9938D5F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A2A1317643E16E00CF6031 /* AVFoundation.framework */; };
 		2E7507786435E7BE4142312A /* WorldMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D3DA014AE34CAE3C0F8A40F /* WorldMesh.swift */; };
@@ -24,8 +29,10 @@
 		3B00F9DB2499DF5B8272893E /* WorldTextures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7670923D2041DF638075807 /* WorldTextures.swift */; };
 		3D8DB4C3A0D4D5E39C741F18 /* GameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DC109E954EE0ED1583E5BC /* GameContext.swift */; };
 		45823F4606D866D0909617A5 /* PoseSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0148AB851CB5FE5871A0A83 /* PoseSolver.swift */; };
+		46A7565B6861216C16ABF99D /* NPCAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F865581F9BF15F012B1AC8 /* NPCAnimator.swift */; };
 		4BDD87B04A0263828FE5F1AD /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB01B8D01B5052A359E59507 /* MainMenuView.swift */; };
 		4C413D79E6C05CAAEDA022D6 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = FCB3591BF13DB58D62F67378 /* Data */; };
+		54930A4B765E5E100E9EE3A4 /* Suspension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44A33367A2EEEF010E902D8 /* Suspension.swift */; };
 		54A452885B742B892771AB79 /* Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FC1A6ED53822B33E8C30702 /* Combine.framework */; };
 		55F6CF19069321D2751849DC /* GLBImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41561BC68E8194CDA3E0D3BF /* GLBImages.swift */; };
 		582F8EA621341BAFA433A162 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636749F28AF341664C66C4D /* InputManager.swift */; };
@@ -43,11 +50,15 @@
 		7BF6F5E3BE00C1744DEE3F0D /* MaterialFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6862CD90D7EB2452C5F50BA /* MaterialFactory.swift */; };
 		7D61FBC362F6B8E868DF6E20 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6203E59CFA83A3FE383F8144 /* AppDelegate.swift */; };
 		7ECDB829399E957076FBD671 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95F443C18739E90F4C1D207 /* SettingsView.swift */; };
+		7EF91FB819F95CF552764FB4 /* NPCSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AE84BE63155488EB8995D9 /* NPCSchedule.swift */; };
+		81DFEB7F52C92396E46F172D /* TaxiSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB606573272364E38701035 /* TaxiSystem.swift */; };
+		827D25EF025245A7CB852756 /* NPCNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC1F34433CF58619FE4F04 /* NPCNavigation.swift */; };
 		82831EAFB90050709FE5DF87 /* SaveData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5B1699C4506B12252F6241 /* SaveData.swift */; };
 		858BBEC8EEEF8E1E16FC1125 /* Buildings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0988E5E6314FEC56462059EE /* Buildings.swift */; };
 		8AE033CF0D3D9E2DD1DE5A5E /* CameraRig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC53823A715254D78814DDA2 /* CameraRig.swift */; };
 		8B946006A2E3D67E0FA97D16 /* GLBFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFB2B1099DA4DC86F3BF78A /* GLBFormat.swift */; };
 		8BA7A70D721ABCD9015C0CBA /* CityLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A368CC2096A5B047DB5B129C /* CityLayout.swift */; };
+		8CFE3E9D21FCFA658B71B1D5 /* PoseBlend.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08A80D0B6210E8283186648 /* PoseBlend.swift */; };
 		911F03053389B56E199B3F3D /* PlayerCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CF449D4A324C8E8991103E /* PlayerCar.swift */; };
 		9677329DF755C74BB0AC844E /* WorldMaterials.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC968F8236A2CEBBA88BD8CE /* WorldMaterials.swift */; };
 		96BA53D59D2C6E9EA4F57451 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9610C1D64C86074DA7D28E5 /* Metal.framework */; };
@@ -56,41 +67,68 @@
 		9C417E40C7C999A3AB3B0D1E /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9895C376D8F80FD77A8CA67 /* Settings.swift */; };
 		9E87D3852A9EF2C715C43F01 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71ECBEE68F11E570C26A57B /* AudioManager.swift */; };
 		A4F6E63FBFA61D8A1FDECF33 /* MeshBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B717C694409568C02E5FC4 /* MeshBuilder.swift */; };
+		A6AE52398C47C911EEB789C1 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB31EE4799FDFD35A4D92711 /* DeveloperView.swift */; };
 		A71F5537CA00971E043B1F4E /* Facades.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F90CF78E9C7744EEE94BD3 /* Facades.swift */; };
 		AAF90E20F4E2EAC0B0B46DDF /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7570DDEBA6BFCF71B92B69B7 /* GameController.framework */; };
 		B044EDF49BD0B6F09D4B0B32 /* CarCustomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95940D640AB8E737C837B29 /* CarCustomizer.swift */; };
 		B1E9116BE40194A369DEA28E /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67108E04574374F1ED29CF34 /* World.swift */; };
 		B7F525C2511DB887C03C624F /* WorldTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9259B488945A3745FED005D4 /* WorldTypes.swift */; };
 		B80C3849905BABC25257371C /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CA60BF797F6215D752B41A /* RootView.swift */; };
+		B98F5CC7342301E17DE68C95 /* PoliceSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C658B1C29DE856F128FA2A31 /* PoliceSystem.swift */; };
+		BA9E612DFF617BD0CE7278F1 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43AECB157F36F82C9D195959 /* NavigationManager.swift */; };
 		BDC0227CFD8463F7437EE505 /* Cockpit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138D6D2F8CC33EDEF8E3D888 /* Cockpit.swift */; };
 		BE1E2974F91E0EA54CC17041 /* PlayerHouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 984FCF2EC84D4A4D115D0A63 /* PlayerHouse.swift */; };
 		BE6FC4B79F1B9261E112568C /* PlayerCharacter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58DC04B27082D5F0DDA54042 /* PlayerCharacter.swift */; };
+		BF285021B99C6A3DCD504476 /* NPCCharacter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83202723D7F114CC1023F7DE /* NPCCharacter.swift */; };
+		C2C44D403375D4FAE2ADA509 /* DeveloperMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69652F8B559D1ABFCBBD74 /* DeveloperMode.swift */; };
 		C418ACD3FD6EB5469616B377 /* HouseBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F02C089406A5193430CB11 /* HouseBuilder.swift */; };
 		C543C0BA01EB4BD7F1F76D7E /* VehicleCollision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F760FFCEA96E69BC988BC31 /* VehicleCollision.swift */; };
+		C7BE1ADDCE8ECC102853FB7F /* NPCSpawner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE4B22C944C7D712ABF36B7 /* NPCSpawner.swift */; };
+		C88961EC75BB248DC5A3FE1C /* NPCVariantSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FA5AAD87929B4267C14BA2 /* NPCVariantSystem.swift */; };
 		CBD2DD9BB4D037F8A4F3D14A /* TouchControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00EEA949F6D35094D077022 /* TouchControlsView.swift */; };
 		CD64435406019D4DDCCA5A99 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2516F41B4D27519549F9ABFD /* Sounds.swift */; };
 		D16E0FA0CD744341F9CB69AE /* ModelIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A999195581250A3AE1628C /* ModelIO.framework */; };
 		D465C900AD8E5BD51B499C5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E73306DD03077A02F0688812 /* Assets.xcassets */; };
+		D58D71C12F4103F2BB580213 /* CityFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 318D670B7E1B001CF12B3166 /* CityFeatures.swift */; };
 		DF96C8BC3356A7B0016822B4 /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 513DE047859EBC03E9161DF4 /* SceneKit.framework */; };
 		DFFED34D7631146ABF1C23E3 /* VehiclePhysics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4293E783ABB075E402670C /* VehiclePhysics.swift */; };
+		E4EF48BADC6B1DBA1B5DC802 /* NPCInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76F9F6C73ABF5076058932C /* NPCInteraction.swift */; };
+		E5A245E58C82DAF328A61ADF /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7582726EBF7B6FDC60DF3518 /* MapView.swift */; };
+		E85507CF2F8E9F143A94CC23 /* NPCTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B69300E7852EC6822E21ED3 /* NPCTypes.swift */; };
+		E97CEBDC4A7FA89D4ED581EF /* TrafficManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2F6AF460C66D7A64B007BE /* TrafficManager.swift */; };
+		EB8EC31A184F4D331EC17CE4 /* WantedSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BAB50682C2E60C40CEC7BE /* WantedSystem.swift */; };
+		EDD53D918F934B216559C021 /* TrafficVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7794EFE55CF02172EA399476 /* TrafficVehicle.swift */; };
 		F12D5AC6525F1BA2CEE868C4 /* CarTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A766E1A9252A429BD90AEB /* CarTypes.swift */; };
+		F3F612D1F215A074E3490013 /* LanePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDFFA823C3DFCFD6C43F615 /* LanePath.swift */; };
 		F6045EB46DC4DC8BA4850EDD /* TouchSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA6FAC469F145530826B34 /* TouchSurface.swift */; };
 		F72B6FEA377725D36264F5FB /* Audio in Resources */ = {isa = PBXBuildFile; fileRef = F989D216FD3B60257ACB435D /* Audio */; };
+		FC039D130E181A160CE86DB8 /* NormalMaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26F8AF2A198774AC28ED470 /* NormalMaps.swift */; };
 		FF9A960E337BC917C178552D /* VehicleEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC374E2FD332029E7E0E41C /* VehicleEffects.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0045440056D997842F55E17C /* WorldGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldGrid.swift; sourceTree = "<group>"; };
+		037FB8179736D3616BB111F8 /* Waypoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Waypoints.swift; sourceTree = "<group>"; };
 		055F757A61336FF8E8B312AB /* Models */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Models; sourceTree = "<group>"; };
 		0988E5E6314FEC56462059EE /* Buildings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Buildings.swift; sourceTree = "<group>"; };
 		138D6D2F8CC33EDEF8E3D888 /* Cockpit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cockpit.swift; sourceTree = "<group>"; };
 		13955C7621A4E447085175B5 /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
+		1495BEE51B1DBCEEBB43BE40 /* NPCManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCManager.swift; sourceTree = "<group>"; };
+		18B42DAC2310E1FD6A218968 /* NPCPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCPool.swift; sourceTree = "<group>"; };
+		1AE4B22C944C7D712ABF36B7 /* NPCSpawner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCSpawner.swift; sourceTree = "<group>"; };
 		2516F41B4D27519549F9ABFD /* Sounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sounds.swift; sourceTree = "<group>"; };
 		26A999195581250A3AE1628C /* ModelIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ModelIO.framework; path = System/Library/Frameworks/ModelIO.framework; sourceTree = SDKROOT; };
+		318D670B7E1B001CF12B3166 /* CityFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityFeatures.swift; sourceTree = "<group>"; };
+		31AE84BE63155488EB8995D9 /* NPCSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCSchedule.swift; sourceTree = "<group>"; };
+		35DC1F34433CF58619FE4F04 /* NPCNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCNavigation.swift; sourceTree = "<group>"; };
 		366F69DACFC7458344A27414 /* GLBLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLBLoader.swift; sourceTree = "<group>"; };
 		3E5840384BE5C589070E70E9 /* HUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDView.swift; sourceTree = "<group>"; };
 		41561BC68E8194CDA3E0D3BF /* GLBImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLBImages.swift; sourceTree = "<group>"; };
+		43AECB157F36F82C9D195959 /* NavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
+		43FA5AAD87929B4267C14BA2 /* NPCVariantSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCVariantSystem.swift; sourceTree = "<group>"; };
 		44DF915DFB55455C41FB1F49 /* Sky.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sky.swift; sourceTree = "<group>"; };
 		46F02C089406A5193430CB11 /* HouseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseBuilder.swift; sourceTree = "<group>"; };
+		4B69300E7852EC6822E21ED3 /* NPCTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCTypes.swift; sourceTree = "<group>"; };
 		513DE047859EBC03E9161DF4 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
 		56CA60BF797F6215D752B41A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		58DC04B27082D5F0DDA54042 /* PlayerCharacter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerCharacter.swift; sourceTree = "<group>"; };
@@ -104,14 +142,20 @@
 		6D3DA014AE34CAE3C0F8A40F /* WorldMesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldMesh.swift; sourceTree = "<group>"; };
 		6D5B1699C4506B12252F6241 /* SaveData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveData.swift; sourceTree = "<group>"; };
 		7570DDEBA6BFCF71B92B69B7 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		7582726EBF7B6FDC60DF3518 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		75F865581F9BF15F012B1AC8 /* NPCAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCAnimator.swift; sourceTree = "<group>"; };
+		7794EFE55CF02172EA399476 /* TrafficVehicle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficVehicle.swift; sourceTree = "<group>"; };
 		7A4293E783ABB075E402670C /* VehiclePhysics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehiclePhysics.swift; sourceTree = "<group>"; };
 		7CFB2B1099DA4DC86F3BF78A /* GLBFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLBFormat.swift; sourceTree = "<group>"; };
 		7DD7B72E54D30905A1C949C4 /* C0derzArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = C0derzArt.swift; sourceTree = "<group>"; };
 		81B5E92B545CDD52E79B455B /* AIDriver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIDriver.swift; sourceTree = "<group>"; };
+		82BAB50682C2E60C40CEC7BE /* WantedSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WantedSystem.swift; sourceTree = "<group>"; };
 		82EA6FAC469F145530826B34 /* TouchSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchSurface.swift; sourceTree = "<group>"; };
+		83202723D7F114CC1023F7DE /* NPCCharacter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCCharacter.swift; sourceTree = "<group>"; };
 		87814540A6117BBDC3E96CBA /* ProceduralTextures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProceduralTextures.swift; sourceTree = "<group>"; };
 		87F90CF78E9C7744EEE94BD3 /* Facades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Facades.swift; sourceTree = "<group>"; };
 		89899B91CD785522B9AAA7EA /* CityRoads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityRoads.swift; sourceTree = "<group>"; };
+		8CDFFA823C3DFCFD6C43F615 /* LanePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanePath.swift; sourceTree = "<group>"; };
 		9259B488945A3745FED005D4 /* WorldTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldTypes.swift; sourceTree = "<group>"; };
 		93B2FB85C1A45F9B701F0DCF /* RoadBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadBuilder.swift; sourceTree = "<group>"; };
 		96408852C821A111AF16A6E3 /* Props.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Props.swift; sourceTree = "<group>"; };
@@ -119,28 +163,38 @@
 		9AF563F974EDD2C780DD634F /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
 		9F760FFCEA96E69BC988BC31 /* VehicleCollision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleCollision.swift; sourceTree = "<group>"; };
 		9FC1A6ED53822B33E8C30702 /* Combine.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Combine.framework; path = System/Library/Frameworks/Combine.framework; sourceTree = SDKROOT; };
+		A08A80D0B6210E8283186648 /* PoseBlend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseBlend.swift; sourceTree = "<group>"; };
 		A0CF449D4A324C8E8991103E /* PlayerCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerCar.swift; sourceTree = "<group>"; };
 		A368CC2096A5B047DB5B129C /* CityLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityLayout.swift; sourceTree = "<group>"; };
 		A9610C1D64C86074DA7D28E5 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		AAF9D416A9269D218C47EF36 /* Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interaction.swift; sourceTree = "<group>"; };
 		AC71C33158FF1595CCD39094 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		AF69652F8B559D1ABFCBBD74 /* DeveloperMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMode.swift; sourceTree = "<group>"; };
+		B44A33367A2EEEF010E902D8 /* Suspension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Suspension.swift; sourceTree = "<group>"; };
 		B636749F28AF341664C66C4D /* InputManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
+		B6CF0E4E08166397731420CD /* NPCBrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCBrain.swift; sourceTree = "<group>"; };
+		B76F9F6C73ABF5076058932C /* NPCInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCInteraction.swift; sourceTree = "<group>"; };
+		BB2F6AF460C66D7A64B007BE /* TrafficManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficManager.swift; sourceTree = "<group>"; };
 		BC53823A715254D78814DDA2 /* CameraRig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRig.swift; sourceTree = "<group>"; };
 		C00EEA949F6D35094D077022 /* TouchControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchControlsView.swift; sourceTree = "<group>"; };
 		C0148AB851CB5FE5871A0A83 /* PoseSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseSolver.swift; sourceTree = "<group>"; };
 		C1DC109E954EE0ED1583E5BC /* GameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContext.swift; sourceTree = "<group>"; };
+		C658B1C29DE856F128FA2A31 /* PoliceSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoliceSystem.swift; sourceTree = "<group>"; };
 		C6862CD90D7EB2452C5F50BA /* MaterialFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialFactory.swift; sourceTree = "<group>"; };
 		C95940D640AB8E737C837B29 /* CarCustomizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarCustomizer.swift; sourceTree = "<group>"; };
 		C9895C376D8F80FD77A8CA67 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		CAC3AA89A27AB6BC2330D7DD /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		CC7FFE8B569D5F5E9874C360 /* Textures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Textures; sourceTree = "<group>"; };
 		D0A2A1317643E16E00CF6031 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D26F8AF2A198774AC28ED470 /* NormalMaps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NormalMaps.swift; sourceTree = "<group>"; };
 		D6060F6C0DF6B57ADB545C8E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		DBB606573272364E38701035 /* TaxiSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaxiSystem.swift; sourceTree = "<group>"; };
 		DF6E5B9DAE13548BFB6D77BF /* RaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceManager.swift; sourceTree = "<group>"; };
 		E6BB64C01DC99D09DA67633A /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		E73306DD03077A02F0688812 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E858E88B726FB1567F828D81 /* InputTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTypes.swift; sourceTree = "<group>"; };
 		EAC374E2FD332029E7E0E41C /* VehicleEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleEffects.swift; sourceTree = "<group>"; };
+		EB31EE4799FDFD35A4D92711 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		F08AC6F2777AA617C99CEA96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F6492F857A9E5DF41E264F31 /* GarageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarageView.swift; sourceTree = "<group>"; };
 		F71ECBEE68F11E570C26A57B /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
@@ -179,6 +233,7 @@
 			isa = PBXGroup;
 			children = (
 				58DC04B27082D5F0DDA54042 /* PlayerCharacter.swift */,
+				A08A80D0B6210E8283186648 /* PoseBlend.swift */,
 				C0148AB851CB5FE5871A0A83 /* PoseSolver.swift */,
 			);
 			path = Character;
@@ -199,6 +254,15 @@
 				59EAE87E8FFB5458F8EC8D9C /* QuartzCore.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3C9E07DE62A6C82359A420AE /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				43AECB157F36F82C9D195959 /* NavigationManager.swift */,
+				037FB8179736D3616BB111F8 /* Waypoints.swift */,
+			);
+			path = Navigation;
 			sourceTree = "<group>";
 		};
 		4215F609B5A94595BBCDBE62 = {
@@ -223,9 +287,11 @@
 		5FD5603C98DB83EE3FB38409 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				EB31EE4799FDFD35A4D92711 /* DeveloperView.swift */,
 				F6492F857A9E5DF41E264F31 /* GarageView.swift */,
 				3E5840384BE5C589070E70E9 /* HUDView.swift */,
 				FB01B8D01B5052A359E59507 /* MainMenuView.swift */,
+				7582726EBF7B6FDC60DF3518 /* MapView.swift */,
 				56CA60BF797F6215D752B41A /* RootView.swift */,
 				F95F443C18739E90F4C1D207 /* SettingsView.swift */,
 				5D4A32DABA083ABD02A88357 /* Theme.swift */,
@@ -244,12 +310,46 @@
 				B765F63F169D76C63FE28CD0 /* Core */,
 				5CBAB61EEA482E0FD4D9B518 /* House */,
 				A4BB8CDA64252826ADBDBAEC /* Input */,
+				9E6FC825FE66C8F1C6248617 /* NPC */,
+				3C9E07DE62A6C82359A420AE /* Navigation */,
+				921D04734A2D9E06E563AE0A /* Traffic */,
 				5FD5603C98DB83EE3FB38409 /* UI */,
 				F258128F67363B8BDEC51D36 /* Vehicle */,
 				B647A7C6E377DB7231956E2F /* World */,
 				FB5DB80DFA4E04EBFAA81349 /* Resources */,
 			);
 			path = Supercars;
+			sourceTree = "<group>";
+		};
+		921D04734A2D9E06E563AE0A /* Traffic */ = {
+			isa = PBXGroup;
+			children = (
+				8CDFFA823C3DFCFD6C43F615 /* LanePath.swift */,
+				C658B1C29DE856F128FA2A31 /* PoliceSystem.swift */,
+				DBB606573272364E38701035 /* TaxiSystem.swift */,
+				BB2F6AF460C66D7A64B007BE /* TrafficManager.swift */,
+				7794EFE55CF02172EA399476 /* TrafficVehicle.swift */,
+				82BAB50682C2E60C40CEC7BE /* WantedSystem.swift */,
+			);
+			path = Traffic;
+			sourceTree = "<group>";
+		};
+		9E6FC825FE66C8F1C6248617 /* NPC */ = {
+			isa = PBXGroup;
+			children = (
+				75F865581F9BF15F012B1AC8 /* NPCAnimator.swift */,
+				B6CF0E4E08166397731420CD /* NPCBrain.swift */,
+				83202723D7F114CC1023F7DE /* NPCCharacter.swift */,
+				B76F9F6C73ABF5076058932C /* NPCInteraction.swift */,
+				1495BEE51B1DBCEEBB43BE40 /* NPCManager.swift */,
+				35DC1F34433CF58619FE4F04 /* NPCNavigation.swift */,
+				18B42DAC2310E1FD6A218968 /* NPCPool.swift */,
+				31AE84BE63155488EB8995D9 /* NPCSchedule.swift */,
+				1AE4B22C944C7D712ABF36B7 /* NPCSpawner.swift */,
+				4B69300E7852EC6822E21ED3 /* NPCTypes.swift */,
+				43FA5AAD87929B4267C14BA2 /* NPCVariantSystem.swift */,
+			);
+			path = NPC;
 			sourceTree = "<group>";
 		};
 		9FE777C3944489B4096E08C2 /* Products */ = {
@@ -274,6 +374,7 @@
 			isa = PBXGroup;
 			children = (
 				0988E5E6314FEC56462059EE /* Buildings.swift */,
+				318D670B7E1B001CF12B3166 /* CityFeatures.swift */,
 				A368CC2096A5B047DB5B129C /* CityLayout.swift */,
 				89899B91CD785522B9AAA7EA /* CityRoads.swift */,
 				6351984BC63B42251B68FD94 /* Colliders.swift */,
@@ -282,6 +383,7 @@
 				93B2FB85C1A45F9B701F0DCF /* RoadBuilder.swift */,
 				44DF915DFB55455C41FB1F49 /* Sky.swift */,
 				67108E04574374F1ED29CF34 /* World.swift */,
+				0045440056D997842F55E17C /* WorldGrid.swift */,
 				FC968F8236A2CEBBA88BD8CE /* WorldMaterials.swift */,
 				6D3DA014AE34CAE3C0F8A40F /* WorldMesh.swift */,
 				F7670923D2041DF638075807 /* WorldTextures.swift */,
@@ -295,6 +397,7 @@
 			children = (
 				BC53823A715254D78814DDA2 /* CameraRig.swift */,
 				65A766E1A9252A429BD90AEB /* CarTypes.swift */,
+				AF69652F8B559D1ABFCBBD74 /* DeveloperMode.swift */,
 				C1DC109E954EE0ED1583E5BC /* GameContext.swift */,
 				CAC3AA89A27AB6BC2330D7DD /* GameState.swift */,
 				AAF9D416A9269D218C47EF36 /* Interaction.swift */,
@@ -332,6 +435,7 @@
 				366F69DACFC7458344A27414 /* GLBLoader.swift */,
 				C6862CD90D7EB2452C5F50BA /* MaterialFactory.swift */,
 				F9B717C694409568C02E5FC4 /* MeshBuilder.swift */,
+				D26F8AF2A198774AC28ED470 /* NormalMaps.swift */,
 				87814540A6117BBDC3E96CBA /* ProceduralTextures.swift */,
 			);
 			path = Assets;
@@ -345,6 +449,7 @@
 				138D6D2F8CC33EDEF8E3D888 /* Cockpit.swift */,
 				A0CF449D4A324C8E8991103E /* PlayerCar.swift */,
 				DF6E5B9DAE13548BFB6D77BF /* RaceManager.swift */,
+				B44A33367A2EEEF010E902D8 /* Suspension.swift */,
 				9F760FFCEA96E69BC988BC31 /* VehicleCollision.swift */,
 				EAC374E2FD332029E7E0E41C /* VehicleEffects.swift */,
 				7A4293E783ABB075E402670C /* VehiclePhysics.swift */,
@@ -446,12 +551,15 @@
 				20531ECE37CC5E01B3C64A79 /* GLBLoader.swift in Sources */,
 				7BF6F5E3BE00C1744DEE3F0D /* MaterialFactory.swift in Sources */,
 				A4F6E63FBFA61D8A1FDECF33 /* MeshBuilder.swift in Sources */,
+				FC039D130E181A160CE86DB8 /* NormalMaps.swift in Sources */,
 				7374EB4B2EFAB2C1DCD2039F /* ProceduralTextures.swift in Sources */,
 				9E87D3852A9EF2C715C43F01 /* AudioManager.swift in Sources */,
 				BE6FC4B79F1B9261E112568C /* PlayerCharacter.swift in Sources */,
+				8CFE3E9D21FCFA658B71B1D5 /* PoseBlend.swift in Sources */,
 				45823F4606D866D0909617A5 /* PoseSolver.swift in Sources */,
 				8AE033CF0D3D9E2DD1DE5A5E /* CameraRig.swift in Sources */,
 				F12D5AC6525F1BA2CEE868C4 /* CarTypes.swift in Sources */,
+				C2C44D403375D4FAE2ADA509 /* DeveloperMode.swift in Sources */,
 				3D8DB4C3A0D4D5E39C741F18 /* GameContext.swift in Sources */,
 				9B82555C4F8B27E6666682F8 /* GameState.swift in Sources */,
 				0D3BBA7AC777BA91DBADCF60 /* Interaction.swift in Sources */,
@@ -465,9 +573,30 @@
 				582F8EA621341BAFA433A162 /* InputManager.swift in Sources */,
 				7564AC6094BF90DA257CCEC5 /* InputTypes.swift in Sources */,
 				F6045EB46DC4DC8BA4850EDD /* TouchSurface.swift in Sources */,
+				46A7565B6861216C16ABF99D /* NPCAnimator.swift in Sources */,
+				220B7B3A3669D84DBDF6E0FD /* NPCBrain.swift in Sources */,
+				BF285021B99C6A3DCD504476 /* NPCCharacter.swift in Sources */,
+				E4EF48BADC6B1DBA1B5DC802 /* NPCInteraction.swift in Sources */,
+				1175A4208F2FBEB4876EE260 /* NPCManager.swift in Sources */,
+				827D25EF025245A7CB852756 /* NPCNavigation.swift in Sources */,
+				28BCC8FD6B179096B5A320B4 /* NPCPool.swift in Sources */,
+				7EF91FB819F95CF552764FB4 /* NPCSchedule.swift in Sources */,
+				C7BE1ADDCE8ECC102853FB7F /* NPCSpawner.swift in Sources */,
+				E85507CF2F8E9F143A94CC23 /* NPCTypes.swift in Sources */,
+				C88961EC75BB248DC5A3FE1C /* NPCVariantSystem.swift in Sources */,
+				BA9E612DFF617BD0CE7278F1 /* NavigationManager.swift in Sources */,
+				28168E46718EE4EF0F9937E3 /* Waypoints.swift in Sources */,
+				F3F612D1F215A074E3490013 /* LanePath.swift in Sources */,
+				B98F5CC7342301E17DE68C95 /* PoliceSystem.swift in Sources */,
+				81DFEB7F52C92396E46F172D /* TaxiSystem.swift in Sources */,
+				E97CEBDC4A7FA89D4ED581EF /* TrafficManager.swift in Sources */,
+				EDD53D918F934B216559C021 /* TrafficVehicle.swift in Sources */,
+				EB8EC31A184F4D331EC17CE4 /* WantedSystem.swift in Sources */,
+				A6AE52398C47C911EEB789C1 /* DeveloperView.swift in Sources */,
 				7524DF0063A0F9E9D18F7B22 /* GarageView.swift in Sources */,
 				1EAC4EAA012E54D6DAAC1464 /* HUDView.swift in Sources */,
 				4BDD87B04A0263828FE5F1AD /* MainMenuView.swift in Sources */,
+				E5A245E58C82DAF328A61ADF /* MapView.swift in Sources */,
 				B80C3849905BABC25257371C /* RootView.swift in Sources */,
 				7ECDB829399E957076FBD671 /* SettingsView.swift in Sources */,
 				3231481CBE692112A152A570 /* Theme.swift in Sources */,
@@ -477,10 +606,12 @@
 				BDC0227CFD8463F7437EE505 /* Cockpit.swift in Sources */,
 				911F03053389B56E199B3F3D /* PlayerCar.swift in Sources */,
 				2A9C721B9196052BBCF0684D /* RaceManager.swift in Sources */,
+				54930A4B765E5E100E9EE3A4 /* Suspension.swift in Sources */,
 				C543C0BA01EB4BD7F1F76D7E /* VehicleCollision.swift in Sources */,
 				FF9A960E337BC917C178552D /* VehicleEffects.swift in Sources */,
 				DFFED34D7631146ABF1C23E3 /* VehiclePhysics.swift in Sources */,
 				858BBEC8EEEF8E1E16FC1125 /* Buildings.swift in Sources */,
+				D58D71C12F4103F2BB580213 /* CityFeatures.swift in Sources */,
 				8BA7A70D721ABCD9015C0CBA /* CityLayout.swift in Sources */,
 				603CFE227A2382CDEB4CE1B1 /* CityRoads.swift in Sources */,
 				7A5A9AA4073BE634FD96919A /* Colliders.swift in Sources */,
@@ -489,6 +620,7 @@
 				6B72E3356852F1E1EF2C1C1E /* RoadBuilder.swift in Sources */,
 				34A2B707FD9B8ADDA4A2249F /* Sky.swift in Sources */,
 				B1E9116BE40194A369DEA28E /* World.swift in Sources */,
+				0C1E0DB90FBCA0915381E34B /* WorldGrid.swift in Sources */,
 				9677329DF755C74BB0AC844E /* WorldMaterials.swift in Sources */,
 				2E7507786435E7BE4142312A /* WorldMesh.swift in Sources */,
 				3B00F9DB2499DF5B8272893E /* WorldTextures.swift in Sources */,

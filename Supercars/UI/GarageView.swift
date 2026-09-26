@@ -261,7 +261,6 @@ struct GarageView: View {
                     Circle().fill(Color(UIColor(hexString: hex)))
                         .frame(width: 34, height: 34)
                         .overlay(Circle().stroke(on ? Neon.green : Color.white.opacity(0.35), lineWidth: on ? 3 : 1))
-                        .shadow(color: on ? Neon.green.opacity(0.8) : Color.clear, radius: 6)
                 }
             }
         }
@@ -272,16 +271,25 @@ struct GarageView: View {
             NeonToggleRow(title: "Race livery", subtitle: "Black + gold Manthey style (turn off for a solid colour)",
                           isOn: Binding<Bool>(get: { cfg.livery }, set: { (v: Bool) in update { (c: inout CarConfig) in c.livery = v } }))
             Text("BODY COLOUR").font(Neon.mono(10, .heavy)).foregroundColor(Neon.cyan)
-            swatches(bodyColours, selected: cfg.paint) { (hex: String) in update { (c: inout CarConfig) in c.paint = hex } }
+            swatches(bodyColours, selected: cfg.paint) { (hex: String) in update { (c: inout CarConfig) in
+                c.paint = hex
+                c.livery = false
+            } }
             ColorPicker("Custom colour", selection: Binding<Color>(
                 get: { Color(UIColor(hexString: cfg.paint)) },
                 set: { (col: Color) in
                     let hex: String = UIColor(col).hexString
-                    update { (c: inout CarConfig) in c.paint = hex }
+                    update { (c: inout CarConfig) in
+                c.paint = hex
+                c.livery = false
+            }
                 }), supportsOpacity: false)
                 .font(Neon.font(13, .semibold)).foregroundColor(.white)
             NeonPickerRow(title: "Finish", options: PaintFinish.allCases, label: { $0.title },
-                          selection: Binding<PaintFinish>(get: { cfg.finish }, set: { (v: PaintFinish) in update { (c: inout CarConfig) in c.finish = v } }))
+                          selection: Binding<PaintFinish>(get: { cfg.finish }, set: { (v: PaintFinish) in update { (c: inout CarConfig) in
+                c.finish = v
+                c.livery = false
+            } }))
         }
     }
 

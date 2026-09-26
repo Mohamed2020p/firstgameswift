@@ -775,3 +775,30 @@ def _road(r):
     y = pnoise(L, r, band(320, 260)) + 0.5 * pnoise(L, r, band(1300, 700)) + 0.7 * pnoise(L, r, lowshape(120))
     y *= 0.85 + 0.15 * np.sin(2 * np.pi * 2.0 * t)
     return y
+
+# ----------------------------------------------------------------------------------------------------------------------------
+# POLICE SIREN (six second "wail" then "yelp": one-shot, re-triggered by PoliceSystem while a unit with its siren on is close)
+# ----------------------------------------------------------------------------------------------------------------------------
+
+
+@sfx("policeSiren", -5.0)
+def _police_siren(r):
+    n = nsamp(6.0)
+    t = tt(n)
+    # frequency plan: slow wail 700 -> 1500 -> 700 (2 x 2.2 s), then a fast yelp (1.6 s)
+    f = np.zeros(n)
+    wail = 2.2
+    for k in range(2):
+        m = (t >= k * wail) & (t < (k + 1) * wail)
+        ph = (t[m] - k * wail) / wail
+        f[m] = 700 + 800 * (0.5 - 0.5 * np.cos(2 * np.pi * ph))
+    m = t >= 2 * wail
+    ph = (t[m] - 2 * wail) / 0.4
+    f[m] = 850 + 600 * (ph % 1.0)
+    phase = 2 * np.pi * np.cumsum(f) / SR
+    y = np.sin(phase) + 0.45 * np.sin(2 * phase) + 0.25 * np.sin(3 * phase)
+    y = np.tanh(y * 1.4)
+    y = bq(y, "peak", 1300, 1.2, 4)
+    y = bq(y, "lp", 5000)
+    env = np.minimum(1.0, t / 0.08) * np.minimum(1.0, (6.0 - t) / 0.35)
+    return reverb(y * env, 0.35, 0.08, r)

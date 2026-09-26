@@ -13,7 +13,7 @@ enum PlayerLocation: String {
 }
 
 enum MenuScreen: String {
-    case none, main, pause, settings, credits, garage, raceSetup, results
+    case none, main, pause, settings, credits, garage, raceSetup, results, map, developer
 }
 
 // MARK: - HUD / menu state.  Game modules WRITE to this (main thread only); SwiftUI views READ it.
@@ -43,11 +43,36 @@ struct RaceHUD: Equatable {
     var prize: Int = 0
 }
 
+struct MapDistrict: Identifiable {
+    let id: Int
+    var name: String
+    var kind: String                   // downtown, midrise, residential, luxury, industrial, park, plaza, civic
+    var rect: WRect
+}
+
 struct MinimapData {
     var boundsMin: Vec2 = Vec2(-1000, -1000)
     var boundsMax: Vec2 = Vec2(1000, 1000)
     var roads: [[Vec2]] = []           // polylines of road centre lines (world XZ)
     var route: [Vec2] = []             // race route polyline
+    var districts: [MapDistrict] = []  // coloured areas for the big map
+    var tilePeriod: Float = 3080       // the streets repeat with this period (endless world)
+}
+
+/// what the navigation system shows on the HUD, the minimap and the big map
+struct NavigationInfo: Equatable {
+    var destinationID: String = ""
+    var name: String = ""
+    var kind: String = ""
+    var distance: Float = 0            // metres along the route
+    var bearing: Float = 0             // radians relative to the player's heading (+ = to the left)
+    var target: Vec2 = Vec2(0, 0)
+    var route: [Vec2] = []
+    var arrived: Bool = false
+
+    static func == (a: NavigationInfo, b: NavigationInfo) -> Bool {
+        return a.destinationID == b.destinationID && a.distance == b.distance && a.bearing == b.bearing && a.route.count == b.route.count
+    }
 }
 
 struct ToastMessage: Equatable, Identifiable {
@@ -91,6 +116,12 @@ final class GameState: ObservableObject {
 
     // race
     @Published var race: RaceHUD? = nil
+
+    // wanted level (0...5 stars) and navigation
+    @Published var wanted: Int = 0
+    @Published var navigation: NavigationInfo? = nil
+    @Published var pois: [MapWaypoint] = []
+    @Published var districtName: String = ""
 
     // minimap
     @Published var minimap = MinimapData()

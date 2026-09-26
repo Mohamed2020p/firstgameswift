@@ -1,0 +1,84 @@
+{
+ "taxi": {
+  "file": "taxi",
+  "length": 4.87,
+  "width": 2.154,
+  "height": 1.639,
+  "wheelRadius": 0.364,
+  "frontAxleZ": 1.4606,
+  "rearAxleZ": -1.4606,
+  "trackFront": 1.607,
+  "trackRear": 1.607,
+  "hubY": 0.3638,
+  "wheelbase": 2.921,
+  "bodyMinZ": -2.488,
+  "bodyMaxZ": 2.382,
+  "hubs": {
+   "RR": [
+    -0.8033,
+    0.3638,
+    -1.4606
+   ],
+   "FR": [
+    -0.8033,
+    0.3638,
+    1.4606
+   ],
+   "RL": [
+    0.8034,
+    0.3638,
+    -1.4606
+   ],
+   "FL": [
+    0.8034,
+    0.3638,
+    1.4606
+   ]
+  }
+ },
+ "police": {
+  "file": "police",
+  "length": 5.36,
+  "width": 2.171,
+  "height": 1.965,
+  "wheelRadius": 0.427,
+  "frontAxleZ": 1.6419,
+  "rearAxleZ": -1.6419,
+  "trackFront": 1.682,
+  "trackRear": 1.682,
+  "hubY": 0.4268,
+  "wheelbase": 3.284,
+  "bodyMinZ": -2.849,
+  "bodyMaxZ": 2.511,
+  "hubs": {
+   "RR": [
+    -0.8411,
+    0.4268,
+    -1.6419
+   ],
+   "FR": [
+    -0.8411,
+    0.4268,
+    1.6419
+   ],
+   "RL": [
+    0.8411,
+    0.4268,
+    -1.6419
+   ],
+   "FL": [
+    0.8411,
+    0.4268,
+    1.6419
+   ]
+  }
+ },
+ "house_ff": {
+  "file": "house_ff",
+  "size": [
+   7.34,
+   6.21,
+   10.17
+  ]
+ }
+}

@@ -167,6 +167,9 @@ final class CarCustomizer {
                 m.roughness.contents = liveryRough ?? NSNumber(value: 0.35)
             } else {
                 m.diffuse.contents = color
+                m.diffuse.contentsTransform = SCNMatrix4Identity
+                m.multiply.contents = nil
+                m.emission.contents = nil
                 m.metalness.contents = NSNumber(value: pbr.metalness)
                 m.roughness.contents = NSNumber(value: pbr.roughness)
             }
@@ -228,6 +231,13 @@ final class CarCustomizer {
 struct CarPart {
     let node: SCNNode
     let rest: simd_quatf
+    let restPos: Vec3
+
+    init(node: SCNNode, rest: simd_quatf) {
+        self.node = node
+        self.rest = rest
+        self.restPos = node.simdPosition
+    }
 }
 
 @MainActor
@@ -245,6 +255,7 @@ final class CarVisualRig {
     private var frontWheels: [CarPart] = []
     private var rearWheels: [CarPart] = []
     private var cockpitHidden: [SCNNode] = []
+    private var brakeNodes: [(slot: Int, node: SCNNode, restPos: Vec3)] = []
     private(set) var hasSteerPivot: Bool = false
 
     init(root: SCNNode, wingNames: [String]) {
@@ -271,6 +282,18 @@ final class CarVisualRig {
         }
         for nm in ["wheel_RL", "wheel_RR"] {
             if let n = VehicleParts.find(root, nm) { rearWheels.append(CarPart(node: n, rest: n.simdOrientation)) }
+        }
+        // brake discs / calipers that are separate nodes follow the wheel they belong to
+        var wheelAssemblies: [SCNNode] = []
+        for p in steerParts { wheelAssemblies.append(p.node) }
+        for p in frontWheels { wheelAssemblies.append(p.node) }
+        for p in rearWheels { wheelAssemblies.append(p.node) }
+        for (slot, tag) in ["FL", "FR", "RL", "RR"].enumerated() {
+            if let n = VehicleParts.find(root, "brake_" + tag) {
+                var inside: Bool = false
+                for a in wheelAssemblies where VehicleParts.isAncestor(a, of: n) { inside = true }
+                if !inside { brakeNodes.append((slot, n, n.simdPosition)) }
+            }
         }
         buildPivot()
         collectCockpitHidden()
@@ -324,6 +347,8 @@ final class CarVisualRig {
     func setCockpitMode(_ inside: Bool) {
         for n in cockpitHidden { n.isHidden = inside }
         interior?.isHidden = false
+        // no windscreen / side glass in the way when looking from inside the car
+        glass?.isHidden = inside
     }
 
     func setWing(_ level: Int) {
@@ -345,6 +370,47 @@ final class CarVisualRig {
             }
         }
         for p in rearWheels { p.node.simdOrientation = p.rest * qSpinR }
+    }
+
+    private static func slot(_ n: SCNNode) -> Int {
+        let nm: String = n.name ?? ""
+        if nm.hasSuffix("FL") { return 0 }
+        if nm.hasSuffix("FR") { return 1 }
+        if nm.hasSuffix("RL") { return 2 }
+        if nm.hasSuffix("RR") { return 3 }
+        return -1
+    }
+
+    /// Per-wheel state from VehicleSuspension ([FL, FR, RL, RR]): own steering angle (Ackermann), own rotation (omega = v / r integrated)
+    /// and own lift over the ground (kerbs, bumps).
+    func setWheelStates(_ w: [WheelVisual]) {
+        if w.count < 4 { return }
+        for p in steerParts {
+            let i: Int = CarVisualRig.slot(p.node)
+            if i < 0 { continue }
+            p.node.simdOrientation = p.rest * simd_quatf(angle: w[i].steer, axis: Vec3(0, 1, 0))
+            p.node.simdPosition = p.restPos + Vec3(0, w[i].lift, 0)
+        }
+        for p in frontWheels {
+            let i: Int = CarVisualRig.slot(p.node)
+            if i < 0 { continue }
+            let spin: simd_quatf = simd_quatf(angle: w[i].phase, axis: Vec3(1, 0, 0))
+            if hasSteerPivot {
+                p.node.simdOrientation = p.rest * spin
+            } else {
+                p.node.simdOrientation = simd_quatf(angle: w[i].steer, axis: Vec3(0, 1, 0)) * p.rest * spin
+                p.node.simdPosition = p.restPos + Vec3(0, w[i].lift, 0)
+            }
+        }
+        for p in rearWheels {
+            let i: Int = CarVisualRig.slot(p.node)
+            if i < 0 { continue }
+            p.node.simdOrientation = p.rest * simd_quatf(angle: w[i].phase, axis: Vec3(1, 0, 0))
+            p.node.simdPosition = p.restPos + Vec3(0, w[i].lift, 0)
+        }
+        for b in brakeNodes {
+            b.node.simdPosition = b.restPos + Vec3(0, w[b.slot].lift, 0)
+        }
     }
 
     /// pitchX: rotation about the car's X axis (positive = nose down), rollZ: about Z (positive = left side up)

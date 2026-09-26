@@ -179,7 +179,7 @@ enum VehicleParticles {
         s.blendMode = .additive
         s.isAffectedByGravity = true
         s.isLocal = false
-        s.orientationMode = .billboardVelocityAligned
+        s.orientationMode = .billboardScreenAligned
         s.stretchFactor = 0.1
         s.propertyControllers = [SCNParticleSystem.ParticleProperty.opacity: fade(1.0)]
         return s

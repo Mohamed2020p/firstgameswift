@@ -28,8 +28,10 @@ enum TouchLayout {
         func sx(_ offset: CGFloat, _ w: CGFloat) -> CGFloat { return lefty ? W - r - offset - w + 10 : l + offset - 10 }
 
         circle(TouchZoneKind.pause, cx: l + 22, cy: t + 22, d: 46)
+        // map button under the minimap (top right)
+        circle(TouchZoneKind.map, cx: W - max(insets.right, 16) - 8 - 59, cy: t + 118 * s + 24, d: 40)
         if hasPrompt {
-            box(TouchZoneKind.prompt, x: W / 2 - 130, y: H - b - (driving ? 178 : 142), w: 260, h: 52)
+            box(TouchZoneKind.prompt, x: W / 2 - 130, y: H - b - (driving ? 134 : 142), w: 260, h: 52)
         }
 
         if driving {
@@ -142,6 +144,7 @@ struct ControlGlyph: View {
         case .lights: symbol("lightbulb.fill", Neon.amber)
         case .horn: symbol("megaphone.fill", Neon.magenta)
         case .pause: symbol("pause.fill", Color.white)
+        case .map: symbol("map.fill", Color.white)
         case .interact: symbol("hand.tap.fill", Neon.green)
         case .jump: symbol("arrow.up", Neon.cyan)
         case .run: symbol("figure.run", latched ? Neon.ink : Neon.amber)
@@ -171,6 +174,7 @@ struct ControlGlyph: View {
         case .lights: return Neon.amber
         case .run: return Neon.amber
         case .pause: return Color.white
+        case .map: return Color.white
         default: return Neon.cyan
         }
     }
@@ -190,7 +194,6 @@ struct ControlGlyph: View {
                 .frame(width: zone.rect.width, height: zone.rect.height)
                 .background(shape.fill(isOn ? tintColor : Neon.ink.opacity(0.5)))
                 .overlay(shape.stroke(tintColor.opacity(0.9), lineWidth: 2))
-                .shadow(color: tintColor.opacity(isOn ? 0.8 : 0.25), radius: isOn ? 14 : 6)
                 .scaleEffect(pressed ? 0.95 : 1)
                 .position(x: zone.rect.midX, y: zone.rect.midY)
         }
@@ -212,7 +215,6 @@ struct WheelWidget: View {
             Rectangle().fill(Neon.magenta).frame(width: 10, height: 26).offset(y: -66)
         }
         .rotationEffect(.degrees(-Double(steer.wheel) * 108))
-        .shadow(color: Neon.green.opacity(pressed ? 0.7 : 0.25), radius: 10)
     }
 }
 
@@ -253,7 +255,6 @@ struct TiltMeter: View {
                     Rectangle().fill(Color.white.opacity(0.4)).frame(width: 2, height: 14)
                     Circle().fill(Neon.green).frame(width: 16, height: 16)
                         .offset(x: CGFloat(max(-1, min(1, steer.steer))) * -67)
-                        .shadow(color: Neon.green, radius: 6)
                 }
                 .padding(.leading, 78)
                 .padding(.bottom, 24)

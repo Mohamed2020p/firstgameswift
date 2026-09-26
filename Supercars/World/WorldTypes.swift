@@ -56,7 +56,10 @@ struct Collider {
 
 enum WC {
     static let pitch: Float = 140          // distance between grid road centre lines
-    static let gridN: Int = 8              // grid lines -8 ... 8
+    static let gridN: Int = 8              // city blocks span grid lines -8 ... 8 (buildings, districts)
+    static let roadN: Int = 11             // streets continue through the green belt: lines -11 ... 11 (one endless-world tile = 22 lines)
+    static let tileLines: Int = 22         // the world repeats every 22 grid lines = 3080 m (chunks -11 ... 10)
+    static let tileChunks: Int = 22
     static let halfWorld: Float = 1500
     static let chunk: Float = 140          // static geometry chunk edge
     static let cell: Float = 70            // prop cell edge
@@ -64,7 +67,7 @@ enum WC {
 }
 
 @inline(__always) func wChunkCoord(_ v: Float) -> Int { return Int(floorf(v / WC.chunk)) }
-@inline(__always) func wChunkKey(_ cx: Int, _ cz: Int) -> Int { return (cx + 100) * 256 + (cz + 100) }
+@inline(__always) func wChunkKey(_ cx: Int, _ cz: Int) -> Int { return (cx + 4096) * 8192 + (cz + 4096) }
 @inline(__always) func wCellCoord(_ v: Float) -> Int { return Int(floorf(v / WC.cell)) }
 @inline(__always) func wCellKey(_ cx: Int, _ cz: Int) -> Int { return (cx + 200) * 512 + (cz + 200) }
 

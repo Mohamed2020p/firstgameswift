@@ -13,7 +13,7 @@ struct SavedPosition: Codable, Equatable {
 struct SaveData: Codable, Equatable {
     var version: Int = 1
     var playerName: String = "c0derz"
-    var money: Int = 25000
+    var money: Int = 999_999_999          // test build: practically unlimited money
     var day: Int = 1
     var timeOfDay: Float = 9.0
     var car: CarConfig = CarConfig()
@@ -42,6 +42,8 @@ final class SaveStore: ObservableObject {
         } else {
             data = SaveData()
         }
+        // test build: old saves get the money too
+        if data.money < 999_999_999 { data.money = 999_999_999 }
     }
 
     var hasProgress: Bool { return FileManager.default.fileExists(atPath: url.path) }
@@ -50,8 +52,8 @@ final class SaveStore: ObservableObject {
 
     @discardableResult
     func spend(_ amount: Int) -> Bool {
-        if data.money >= amount { data.money -= amount; return true }
-        return false
+        // test build: unlimited money - purchases always succeed and never cost anything
+        return true
     }
 
     func eraseAll() {

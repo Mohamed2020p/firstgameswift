@@ -117,7 +117,9 @@ final class GLBAsset: @unchecked Sendable {
 
     /// Builds a NEW node hierarchy. Geometry and materials are shared with every other instance; skinned meshes get a fresh SCNSkinner bound
     /// to the joint nodes of THIS instance. Node names are exactly the glTF node names.
-    func instantiate() -> SCNNode {
+    /// `uniqueGeometry`: every mesh node gets its own SCNGeometry object (vertex data stays shared, the materials array does not), so
+    /// the caller can swap materials on this instance only (pedestrian clothing colours).
+    func instantiate(uniqueGeometry: Bool = false) -> SCNNode {
         var made: [SCNNode?] = [SCNNode?](repeating: nil, count: nodeTemplates.count)
 
         func make(_ index: Int) -> SCNNode? {
@@ -135,7 +137,11 @@ final class GLBAsset: @unchecked Sendable {
             }
             made[index] = n
             if let mi = t.mesh, let mt = meshTemplates[mi] {
-                n.geometry = mt.geometry
+                if uniqueGeometry, let copy = mt.geometry.copy() as? SCNGeometry {
+                    n.geometry = copy
+                } else {
+                    n.geometry = mt.geometry
+                }
             }
             for c in t.children {
                 if let child = make(c) { n.addChildNode(child) }
@@ -171,7 +177,7 @@ final class GLBAsset: @unchecked Sendable {
                     bones.append(SCNNode())   // joint outside the scene graph: harmless placeholder
                 }
             }
-            let skinner: SCNSkinner = SCNSkinner(baseGeometry: mt.geometry, bones: bones, boneInverseBindTransforms: st.inverseBind,
+            let skinner: SCNSkinner = SCNSkinner(baseGeometry: node.geometry ?? mt.geometry, bones: bones, boneInverseBindTransforms: st.inverseBind,
                                                  boneWeights: weights, boneIndices: indices)
             var skeletonNode: SCNNode? = nil
             if st.skeleton >= 0 && st.skeleton < made.count { skeletonNode = made[st.skeleton] }

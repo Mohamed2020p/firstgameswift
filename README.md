@@ -2,7 +2,8 @@
 
 A native iOS open-world supercar game by **c0derz**. 100 % Swift (5.9), SceneKit (Metal) for the 3D world, SwiftUI for every menu / HUD / touch control, AVAudioEngine for sound, CoreMotion tilt steering and GameController pad support. No third-party packages, no web view.
 
-* Drive a Porsche 992 GT3 R through a ~3 km x 3 km city, race AI opponents, crash into destructible lamps / trees / signs.
+* Drive a Porsche 992 GT3 R through an **endless** city (a 3 km island that repeats in every direction with a green belt and streets between the islands), race AI opponents, crash into destructible lamps / trees / signs.
+* A living city: pedestrians with different faces and clothes, taxis that pick people up and drop them off, police with a 0-5 star wanted system, and an interactive map with navigation to your house, the garage, the race, the police station and more.
 * Walk around as c0derz, get in and out of the car, enter your house, sleep in the bed, open the garage and customise the car (engine V6 to V16, paint, livery, rims, calipers, tint, wing, tyres).
 * iPhone (and iPad), iOS 16.0+, landscape only.
 
@@ -21,6 +22,9 @@ Supercars/
   World/                    city, roads, sky, props, colliders
   Vehicle/                  physics, PlayerCar, cockpit, customiser, race manager, AI
   Character/                avatar, pose solver / IK, PlayerCharacter
+  NPC/                      pedestrians: manager, pool, spawner, brain, animator, navigation, variants, schedule, interaction
+  Traffic/                  taxis, police, wanted system, lane paths, AI vehicles
+  Navigation/               waypoints, destination + route guidance
   House/                    player's house + garage, c0derz art
   Audio/                    AudioManager
   Input/                    InputManager (tilt / touch / gamepad / keyboard), touch controls
@@ -28,6 +32,7 @@ Supercars/
   Resources/                Info.plist, Assets.xcassets, Models/*.glb, Textures/, Data/*.json, Audio/*.m4a
 assets_src/                 original GLB files supplied by the author (not shipped in the app)
 tools/                      Python tooling (asset pipeline, audio synthesis, project generator, static checkers)
+                            asset_npc.py / asset_traffic.py / asset_chair.py: pedestrians, taxi, police, house, gaming chair (source GLBs stay untouched)
 docs/ARCHITECTURE.md        conventions and the exact public API of every module
 ```
 
@@ -54,6 +59,9 @@ The IPA is **unsigned**. Nothing else is needed on Bitrise (no certificates, no 
 | --- | --- |
 | Optimised models + JSON data from `assets_src/*.glb` (numpy + Pillow + the Blender 2.79 MCP bridge in `C:lender-claude` for mesh decimation; the optimised results are already committed, so this is only needed to regenerate them) | `python tools/optimize_assets.py` |
 | Synthesised sound effects, engine loops, music and ambience (`.m4a`, needs numpy + scipy + ffmpeg) | `python tools/make_audio_all.py` |
+| Pedestrian archetypes (baked skeletons, decimated + skin-weight transferred, tintable textures) into `Models/npc_*.glb` + `Data/npc_meta.json` | `python tools/asset_npc.py` (check with `python tools/npc_check.py <name>`) |
+| Taxi / police truck (wheels split into steer / spin nodes, light bar lamps) + the suburban house | `python tools/asset_traffic.py` |
+| Gaming chair (522k triangles -> 5k) | `python tools/asset_chair.py` |
 | App icon (Pillow + numpy) | `python tools/make_icon.py` |
 | Xcode project (run after adding / removing any `.swift` file) | `python tools/gen_xcodeproj.py` |
 | Validate the Xcode project structure | `python tools/check_xcodeproj.py` |
@@ -66,6 +74,9 @@ XcodeGen (`project.yml`) picks up new files automatically; the fallback project 
 
 * **Driving:** tilt the phone like a steering wheel (calibrate in Settings), or use the on-screen wheel / left-right buttons. Gas and brake pedals, handbrake, gear up / down, horn, headlights and a camera-view button (chase, close, hood, cockpit, bumper) are on screen. Steering mode, tilt sensitivity, dead zone and range are in Settings, left-handed layout is supported.
 * **On foot:** left virtual joystick to move, drag on the right side to look, run button, interact button (doors, bed, garage console, car door ...).
+* **Map:** the map button under the minimap (or `M` on a keyboard) opens the full map: drag to pan, pinch to zoom, tap a place (house, garage, race start, police station, taxi stands, districts) or an empty spot (drops a pin), then *Set destination*. A route line, a compass arrow and the distance appear on the HUD and the minimap.
+* **Wanted level:** dangerous driving, crashes and hitting people or police raise the star level; police investigate at 1 star and chase from 2 stars. Stop and wait next to a police car to be let off with a warning, or get out of sight.
+* **Developer tools (hidden):** always on in DEBUG builds; in release builds tap the SUPERCARS wordmark seven times in the main menu (or the version line in Settings > Credits) and use *Developer tools* in the pause menu: wanted level, teleports, repair / reset car, money, unlock all, time of day, weather, toggle pedestrians / taxis / police, spawn a taxi or a police unit.
 * **Menus:** pause from the HUD; Settings contains graphics presets (Low / Medium / High / Ultra / Custom), controls, audio, gameplay and credits.
 * **Gamepads:** MFi / DualShock / DualSense / Xbox controllers and hardware keyboards are read through the GameController framework.
 * Progress (money, garage, position, best laps) and settings are saved automatically in the app's Documents folder.

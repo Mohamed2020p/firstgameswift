@@ -157,6 +157,8 @@ final class TouchSurfaceView: UIView {
             input.lightsTap = true
         case .pause:
             input.pauseTap = true
+        case .map:
+            input.mapTap = true
         case .jump:
             input.jumpTap = true
         case .calibrate:

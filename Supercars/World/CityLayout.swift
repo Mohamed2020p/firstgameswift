@@ -3,7 +3,7 @@ import simd
 
 // MARK: - Deterministic city layout: road network, blocks, lots (building placements), race routes, spawn points
 
-enum WBlockKind { case downtown, midrise, residential, park, plaza, industrial }
+enum WBlockKind { case downtown, midrise, residential, park, plaza, industrial, civic }
 
 struct WBlock {
     var i: Int
@@ -112,13 +112,24 @@ final class WCityLayout {
     // MARK: roads
 
     private func makeRoads() {
-        let n = WC.gridN
+        // the streets run through the whole endless-world tile (lines -11 ... 11); only the hillside suburb keeps the grid out:
+        // east of x = 1120 the streets z = 140 ... 700 stop, and the two north-south lines x = 1260 / 1400 skip the suburb's z range
+        let n = WC.roadN
         let ext: Float = Float(n) * WC.pitch
+        let suburb: WRect = WGrid.suburbRect
         for k in -n...n {
             let cls = WCityLayout.gridClass(k)
             let c = Float(k) * WC.pitch
-            _ = addRoad(cls, "Street X\(k)", [Vec2(-ext, c), Vec2(ext, c)], closed: false, grid: true)
-            _ = addRoad(cls, "Street Z\(k)", [Vec2(c, -ext), Vec2(c, ext)], closed: false, grid: true)
+            var xEnd: Float = ext
+            if c > suburb.z0 - 30 && c < suburb.z1 + 30 { xEnd = WC.pitch * Float(WC.gridN) }
+            _ = addRoad(cls, "Street X\(k)", [Vec2(-ext, c), Vec2(xEnd, c)], closed: false, grid: true)
+            if c > suburb.x0 + 60 && c < suburb.x1 - 30 {
+                // a north-south line that would cross the suburb: two pieces
+                _ = addRoad(cls, "Street Z\(k)a", [Vec2(c, -ext), Vec2(c, suburb.z0 - 20)], closed: false, grid: true)
+                _ = addRoad(cls, "Street Z\(k)b", [Vec2(c, suburb.z1 + 20), Vec2(c, ext)], closed: false, grid: true)
+            } else {
+                _ = addRoad(cls, "Street Z\(k)", [Vec2(c, -ext), Vec2(c, ext)], closed: false, grid: true)
+            }
         }
         // curved ring road around downtown
         var ringPts: [Vec2] = []
@@ -177,6 +188,7 @@ final class WCityLayout {
                 if i == -2 && j == 1 { kind = WBlockKind.park }
                 if i == 5 && j == -5 { kind = WBlockKind.park }
                 if i == -2 && j == -4 { kind = WBlockKind.plaza }
+                if i == 2 && j == 3 { kind = WBlockKind.civic }         // police station + public parking
                 if i <= -6 && j <= -6 { kind = WBlockKind.industrial }
                 blocks.append(WBlock(i: i, j: j, rect: rect, kind: kind))
                 blockLookup[(i + 20) * 64 + (j + 20)] = blocks.count - 1
@@ -275,7 +287,7 @@ final class WCityLayout {
         for b in blocks {
             let r = b.rect
             switch b.kind {
-            case .park, .plaza:
+            case .park, .plaza, .civic:
                 continue
             case .downtown:
                 makeDowntownBlock(r)
@@ -506,7 +518,7 @@ final class WCityLayout {
         if c == 3 { return SurfaceType.grass }
         if insidePlot(p, margin: 0) {
             let lp = plot.toLocal(p)
-            if lp.x > 11 && lp.x < 17 && lp.y > 8 { return SurfaceType.concrete }
+            if HousePlan.isPaved(lp) { return SurfaceType.concrete }
             return SurfaceType.grass
         }
         let n = WC.gridN
@@ -528,6 +540,7 @@ final class WCityLayout {
             let r = roads[rid]
             if let hit = index.nearest(p, maxDist: 70), hit.road.id == r.id { return SurfaceType.grass }
         }
-        return SurfaceType.dirt
+        // the green belt between the city islands: fields
+        return SurfaceType.grass
     }
 }

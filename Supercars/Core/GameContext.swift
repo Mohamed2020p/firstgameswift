@@ -46,6 +46,14 @@ final class GameContext {
     var player: PlayerCharacter!
     var house: PlayerHouse!
     var race: RaceManager!
+    // living city (all optional: the game still runs if any of them fails to build)
+    var wanted: WantedSystem?
+    var npcs: NPCManager?
+    var traffic: TrafficManager?
+    var taxi: TaxiSystem?
+    var police: PoliceSystem?
+    var nav: NavigationManager?
+    var dev: DeveloperMode?
 
     var sun: SCNNode { return world.sun }
 
@@ -118,6 +126,28 @@ final class GameContext {
         state.loadingText = "Warming up the grid…"
         race = RaceManager(ctx: self)
         await race.build()
+        state.loadingProgress = 0.96
+        await Task.yield()
+
+        state.loadingText = "Bringing the city to life…"
+        wanted = WantedSystem(ctx: self)
+        let navigation = NavigationManager(ctx: self)
+        nav = navigation
+        world.registerWaypoints(into: navigation.registry, spawn: world.spawn)
+        state.pois = navigation.registry.pointsOfInterest
+        let people = NPCManager(ctx: self, layout: world.cityLayout)
+        npcs = people
+        people.navigator.taxiStops = world.taxiStops
+        await people.build()
+        state.loadingProgress = 0.98
+        await Task.yield()
+        let cars = TrafficManager(ctx: self)
+        traffic = cars
+        await cars.build()
+        people.trafficBodies = { [weak cars] in cars?.movingBodies() ?? [] }
+        taxi = TaxiSystem(ctx: self, traffic: cars, npcs: people)
+        police = PoliceSystem(ctx: self, traffic: cars)
+        dev = DeveloperMode(ctx: self)
 
         world.timeOfDay = save.data.timeOfDay
         state.minimap = world.minimap()
@@ -182,6 +212,9 @@ final class GameContext {
         input.update(dt: dt)
         let s = input.state
         if s.pause { if state.isPaused { resume() } else if state.mode == .onFoot || state.mode == .driving { pause() } }
+        if s.map {
+            if state.screen == .map { closeMap() } else if state.mode == .onFoot || state.mode == .driving { openMap() }
+        }
         if state.isPaused { return }
 
         switch state.mode {
@@ -203,6 +236,13 @@ final class GameContext {
         world.update(dt: dt, focus: focus)
         house.update(dt: dt)
         race.update(dt: dt)
+        let camForward: Vec3 = cameraRig.node.simdWorldFront
+        npcs?.update(dt: dt, focus: focus, cameraForward: camForward)
+        traffic?.update(dt: dt, focus: focus)
+        taxi?.update(dt: dt)
+        police?.update(dt: dt)
+        wanted?.update(dt: dt, police: police)
+        nav?.update(dt: dt)
         cameraRig.update(dt: dt)
         audio.updateListener(position: cameraRig.node.simdPosition, forward: cameraRig.node.simdWorldFront)
 
@@ -291,10 +331,14 @@ final class GameContext {
         audio.setMusic(.drive)
         audio.setAmbience(.suburbDay)
         state.showToast("Welcome home, \(save.data.playerName)")
+        // a new game starts with the race already marked: the map, the minimap and the HUD arrow lead the way
+        if !continueSave { nav?.setDestination(id: "raceStart") }
     }
 
     func returnToMenu() {
         if race.isActive { race.stop() }
+        wanted?.clear()
+        nav?.clear()
         if state.mode == .driving { exitCar() }
         if player.location != .outside { exitHouse() }
         state.isPaused = false
@@ -307,6 +351,22 @@ final class GameContext {
         guard state.mode == .onFoot || state.mode == .driving else { return }
         state.isPaused = true
         state.screen = .pause
+    }
+
+    /// full-screen interactive map (pauses the world while it is open)
+    func openMap() {
+        guard state.mode == .onFoot || state.mode == .driving, state.screen == .none else { return }
+        state.isPaused = true
+        state.screen = .map
+        audio.play(SFX.uiTap, volume: 0.7, rate: 1, position: nil)
+    }
+
+    func closeMap() {
+        guard state.screen == .map else { return }
+        state.isPaused = false
+        state.screen = .none
+        lastTimestamp = displayLink?.timestamp ?? lastTimestamp
+        audio.play(SFX.uiBack, volume: 0.6, rate: 1, position: nil)
     }
 
     func resume() {
@@ -418,6 +478,7 @@ final class GameContext {
         let native = scnView.window?.screen.scale ?? UIScreen.main.scale
         scnView.contentScaleFactor = native * CGFloat(g.renderScale)
         cameraRig.applyGraphics(g, fovScale: settings.settings.gameplay.fovScale)
+        npcs?.applyGraphics(g)
         if let link = displayLink {
             link.preferredFrameRateRange = CAFrameRateRange(minimum: 24, maximum: Float(g.fpsCap), preferred: Float(g.fpsCap))
         }

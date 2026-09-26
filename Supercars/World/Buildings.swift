@@ -20,6 +20,8 @@ final class WBuildingBuilder {
     private let layout: WCityLayout
     private let colliders: ColliderWorld
     private var models: [WExtracted?] = []
+    /// every collider created for a building, by the chunk of its lot: the endless-world clones re-create them at an offset
+    private var recorded: [Int: [Collider]] = [:]
 
     init(mats: WorldMaterials, layout: WCityLayout, colliders: ColliderWorld) {
         self.mats = mats
@@ -78,6 +80,22 @@ final class WBuildingBuilder {
         let c = Collider.box(id: id, kind: ColliderKind.building, center: lot.center, halfExtents: Vec2(width * 0.5, depth * 0.5),
                              heading: lot.heading, height: height, mass: 1_000_000)
         colliders.add(c)
+        let key: Int = wChunkKey(wChunkCoord(lot.center.x), wChunkCoord(lot.center.y))
+        if recorded[key] == nil { recorded[key] = [c] } else { recorded[key]!.append(c) }
+    }
+
+    /// building colliders of base chunk `sourceKey`, shifted by `offset` (returns the new collider ids)
+    func cloneColliders(sourceKey: Int, offset: Vec2) -> [Int] {
+        guard let list = recorded[sourceKey] else { return [] }
+        var ids: [Int] = []
+        for c in list {
+            var n: Collider = c
+            n.id = colliders.allocateID()
+            n.center = c.center + offset
+            colliders.add(n)
+            ids.append(n.id)
+        }
+        return ids
     }
 
     // MARK: user GLB buildings

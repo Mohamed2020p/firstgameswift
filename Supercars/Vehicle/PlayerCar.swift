@@ -107,6 +107,8 @@ final class PlayerCar: CameraController {
     private var surfaceHard: Bool = true
 
     // visual dynamics
+    private let suspension: VehicleSuspension = VehicleSuspension()
+    private var wheelGround: [Float] = [0, 0, 0, 0]
     private var bodyPitch: Float = 0
     private var bodyRoll: Float = 0
     private var rpmDisplay: Float = 1000
@@ -121,6 +123,7 @@ final class PlayerCar: CameraController {
     private var cameraSnap: Bool = true
     private var camYaw: Float = 0
     private var camFov: Float = 62
+    private var camPull: Float = 0          // camera distance change from acceleration / braking (smoothed)
 
     init(ctx: GameContext) {
         self.ctx = ctx
@@ -150,6 +153,7 @@ final class PlayerCar: CameraController {
         let r: CarVisualRig = CarVisualRig(root: model, wingNames: meta?.wingNodes ?? [])
         rig = r
         customizer = CarCustomizer(root: model)
+        NormalMaps.refineCockpit(root: model)
 
         // anchors that move with the body
         let eyeP: Vec3 = VehicleMeta.vec(meta?.driverEye, Vec3(0.36, 0.98, 0.05))
@@ -309,6 +313,7 @@ final class PlayerCar: CameraController {
         groundRoll = 0
         bodyPitch = 0
         bodyRoll = 0
+        suspension.reset()
         rpmDisplay = physics.idleRPM
         cameraSnap = true
         poseDirty = true
@@ -470,16 +475,31 @@ final class PlayerCar: CameraController {
 
         rpmDisplay = damp(rpmDisplay, physics.rpm, 14, d)
         if let rg = rig {
-            let steerVis: Float = physics.delta
-            rg.setWheels(steer: steerVis, spinFront: physics.phaseFront, spinRear: physics.phaseRear)
-            let ax: Float = physics.ax
-            let ay: Float = physics.ay
-            let tp: Float = clampf(-0.0035 * ax, -0.06, 0.06)
-            let tr: Float = clampf(0.0045 * ay, -0.07, 0.07)
-            bodyPitch = damp(bodyPitch, tp, 9, d)
-            bodyRoll = damp(bodyRoll, tr, 9, d)
-            let sp: Float = clampf(abs(physics.u) / 90, 0, 1)
-            rg.setBody(pitchX: bodyPitch, rollZ: bodyRoll, heave: -0.03 * sp * sp)
+            // four independent suspension corners + per-wheel steering / rotation (see Suspension.swift)
+            var si: SuspensionInput = SuspensionInput()
+            si.ax = physics.ax
+            si.ay = physics.ay
+            si.u = physics.u
+            si.v = physics.v
+            si.yawRate = physics.r
+            si.steerDelta = physics.delta
+            si.rearSpin = physics.rearSpin
+            si.frontLocked = physics.frontLocked
+            si.absActive = physics.absActive
+            si.handbrake = controls.handbrake
+            si.ground = wheelGround
+            si.mass = physics.mass
+            si.downforceCoefficient = physics.clA
+            si.cgHeight = physics.cgHeight
+            si.wheelbase = physics.wheelbase
+            si.distFront = physics.distFront
+            si.trackFront = trackFront
+            si.trackRear = trackRear
+            si.radiusFront = wheelRadiusFront
+            si.radiusRear = wheelRadiusRear
+            suspension.step(d, si)
+            rg.setWheelStates(suspension.wheels)
+            rg.setBody(pitchX: suspension.pitch, rollZ: suspension.roll, heave: suspension.heave)
         }
         cockpit.update(steerInput: occupied ? controls.steer : 0, speed: physics.u, throttle: inputThrottle, brake: inputBrake, dt: d)
 
@@ -558,6 +578,10 @@ final class PlayerCar: CameraController {
                 ctx.input.haptic(imp.speed > 10 ? HapticKind.heavy : HapticKind.medium)
             }
             if imp.speed > 3 { effects?.burstSparks(at: p3) }
+            if imp.speed > 5 {
+                ctx.wanted?.reportCrash(speed: imp.speed, destructible: imp.destructible)
+                ctx.npcs?.notifyCrash(at: imp.point, magnitude: clampf(imp.speed / 20, 0.1, 1))
+            }
             if gs.gameplay.damage {
                 var add: Float = 0
                 if imp.destructible {
@@ -602,12 +626,23 @@ final class PlayerCar: CameraController {
         var mu: Float = 0
         var drag: Float = 0
         var hard: Bool = true
-        for p in pts {
+        for (i, p) in pts.enumerated() {
             let s: SurfaceType = w.surface(at: p)
             let g: (mu: Float, drag: Float) = VehicleSurface.grip(s)
             mu += g.mu
             drag += g.drag
             if !VehicleSurface.isHard(s) { hard = false }
+            // height of the surface under this wheel: the kerb / sidewalk is 15 cm up, soft ground is uneven
+            var level: Float = 0
+            if s == SurfaceType.sidewalk {
+                level = WC.curbH
+            } else if s == SurfaceType.grass || s == SurfaceType.dirt {
+                let x: Float = p.x
+                let z: Float = p.y
+                let n: Float = (sinf(x * 2.1) + sinf(z * 1.7 + 1.3) + sinf((x + z) * 3.3)) / 3
+                level = 0.022 * n * clampf(abs(physics.u) / 5, 0, 1)
+            }
+            if i < wheelGround.count { wheelGround[i] = level }
         }
         physics.muScale = mu * 0.25
         physics.extraDrag = drag * 0.25
@@ -760,7 +795,9 @@ final class PlayerCar: CameraController {
         switch view {
         case .chase, .close:
             let close: Bool = view == .close
-            let dist: Float = close ? 4.6 + 1.4 * sf : 6.4 + 2.4 * sf
+            // acceleration pulls the camera back, braking brings it in (smooth, small)
+            camPull = damp(camPull, clampf(state.longitudinalG * 0.8, -0.6, 0.8), 2.4, d)
+            let dist: Float = (close ? 4.6 + 1.4 * sf : 6.4 + 2.4 * sf) + camPull
             let height: Float = close ? 1.35 + 0.25 * sf : 2.0 + 0.5 * sf
             var target: Float = state.heading
             if state.speed > 6 {
@@ -778,7 +815,7 @@ final class PlayerCar: CameraController {
             let minY: Float = groundAt(Vec2(desired.x, desired.z)) + 0.6
             if desired.y < minY { desired.y = minY }
             let look: Vec3 = pos + fwd * (3 + 0.06 * speed) + Vec3(0, 1.0, 0)
-            let targetFov: Float = (close ? 64 : 62) + 16 * sf
+            let targetFov: Float = (close ? 64 : 62) + 16 * sf + clampf(state.longitudinalG * 2.5, -2, 3)
             if cameraSnap {
                 camFov = targetFov
             } else {

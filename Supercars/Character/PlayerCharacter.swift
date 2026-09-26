@@ -28,6 +28,8 @@ final class PlayerCharacter: CameraController {
     private var speed: Float = 0
     private var vel: Vec3 = Vec3(0, 0, 0)
     private var gaitPhase: Float = 0
+    private var locoBlend: Float = 0
+    private var turnRate: Float = 0
     private var time: Float = 0
     private var stepIndex: Int = 0
     private let radius: Float = 0.32
@@ -120,7 +122,7 @@ final class PlayerCharacter: CameraController {
         if mag > 0.001 { wish = wish / simd_length(wish) }
         var targetSpeed: Float = 0
         if mag > 0.08 {
-            if s.run { targetSpeed = 6.2 } else if mag > 0.6 { targetSpeed = 3.7 } else { targetSpeed = 1.6 * (mag / 0.6) }
+            if s.run { targetSpeed = 4.6 } else if mag > 0.6 { targetSpeed = 2.2 } else { targetSpeed = 1.5 * (mag / 0.6) }     // run 4.6 m/s, brisk walk 2.2 m/s, stroll up to 1.5 m/s
         }
         let accel: Float = targetSpeed > speed ? 13 : 18
         speed = speed + clampf(targetSpeed - speed, -accel * dt, accel * dt)
@@ -128,7 +130,11 @@ final class PlayerCharacter: CameraController {
             let targetHeading: Float = headingOf(Vec2(wish.x, wish.z))
             let diff: Float = angleDiff(heading, targetHeading)
             let maxTurn: Float = (speed > 3 ? 9 : 12) * dt
-            heading = wrapAngle(heading + clampf(diff, -maxTurn, maxTurn))
+            let turn: Float = clampf(diff, -maxTurn, maxTurn)
+            heading = wrapAngle(heading + turn)
+            turnRate = damp(turnRate, turn / max(dt, 0.0001), 8, dt)
+        } else {
+            turnRate = damp(turnRate, 0, 8, dt)
         }
         let step: Vec3 = headingForward(heading) * (speed * dt)
         var np: Vec3 = pos + step
@@ -193,51 +199,69 @@ final class PlayerCharacter: CameraController {
 
     private func applyIdlePose(dt: Float) {
         guard let sv = solver else { return }
+        sv.apply(idleParams(sv))
+    }
+
+    /// standing still: breathing, a slow weight shift, head looking around a little, arms hanging with bent elbows
+    private func idleParams(_ sv: WPoseSolver) -> WPoseParams {
         var p = WPoseParams()
         let breathe: Float = sinf(time * 1.7)
+        let shift: Float = sinf(time * 0.55)
         p.spinePitch = 0.012 * breathe
-        p.headYaw = 0.05 * sinf(time * 0.45)
-        p.hipsOffset = Vec3(0, 0, 0)
-        p.leftFoot = Vec3(0.105, sv.restAnkleHeight, -0.04)
-        p.rightFoot = Vec3(-0.105, sv.restAnkleHeight, -0.04)
-        p.leftHand = Vec3(0.30, 1.03 + 0.004 * breathe, 0.02)
-        p.rightHand = Vec3(-0.30, 1.03 + 0.004 * breathe, 0.02)
+        p.spineRoll = 0.012 * shift
+        p.headYaw = 0.07 * sinf(time * 0.45) + 0.03 * sinf(time * 1.1)
+        p.headPitch = 0.02 * sinf(time * 0.7)
+        p.hipsOffset = Vec3(0.012 * shift, -0.004 * (1 + breathe), 0)
+        p.hipsRoll = -0.015 * shift
+        p.leftFoot = Vec3(0.10, sv.restAnkleHeight, -0.03)
+        p.rightFoot = Vec3(-0.10, sv.restAnkleHeight, -0.03)
+        p.leftFootPitch = 0
+        p.rightFootPitch = 0
+        p.leftHand = Vec3(0.28, 1.02 + 0.004 * breathe, 0.03)
+        p.rightHand = Vec3(-0.28, 1.02 + 0.004 * breathe, 0.03)
         p.leftElbowPole = Vec3(0.5, -0.2, -0.8)
         p.rightElbowPole = Vec3(-0.5, -0.2, -0.8)
         p.fingerCurl = 0.3
         p.thumbCurl = 0.15
-        sv.apply(p)
+        return p
     }
 
-    private func applyLocomotionPose(dt: Float) {
-        guard let sv = solver else { return }
-        if speed < 0.12 {
-            applyIdlePose(dt: dt)
-            return
-        }
+    /// walk / jog / sprint cycle. Feet are planted (the stance foot slides backward at exactly the walking speed, so there is no skating),
+    /// hips drop only as much as the legs need, arms swing against the legs, the torso counter-rotates and leans into the run.
+    private func locomotionParams(_ sv: WPoseSolver, dt: Float) -> WPoseParams {
         let strideLen: Float = clampf(0.95 + 0.42 * speed, 1.0, 3.4)
-        gaitPhase += (speed / strideLen) * dt
-        gaitPhase -= floorf(gaitPhase)
+        if speed > 0.12 {
+            gaitPhase += (speed / strideLen) * dt
+            gaitPhase -= floorf(gaitPhase)
+        }
         let run: Float = smoothstep(2.4, 4.8, speed)
         let amp: Float = strideLen * 0.25
-        let stepH: Float = lerpf(0.10, 0.26, run)
+        let stepH: Float = lerpf(0.09, 0.24, run)
         let ankle: Float = sv.restAnkleHeight
-        // hips lowered so the legs can reach the stride
-        let legLen: Float = (sv.thigh + sv.shin) * 0.97
+        let legLen: Float = (sv.thigh + sv.shin) * 0.975
         let hipY: Float = sv.restHipsPos.y
+        // the hips stay lowest in double support and rise over the stance leg
         let neededDrop: Float = max(0, (hipY - ankle) - sqrtf(max(0, legLen * legLen - amp * amp)))
-        let bob: Float = 0.018 * (1 - cosf(gaitPhase * Float.tau * 2)) * (0.6 + run)
-        let drop: Float = neededDrop + bob
+        let bob: Float = 0.022 * (0.5 - 0.5 * cosf(gaitPhase * Float.tau * 2)) * (0.6 + run)
+        let drop: Float = neededDrop + 0.012 * (1 - run) + bob * 0.4
+        let cyc: Float = gaitPhase * Float.tau
 
         var p = WPoseParams()
-        p.hipsOffset = Vec3(0, -drop, 0)
-        p.hipsPitch = 0.05 + run * 0.22
-        let twist: Float = sinf(gaitPhase * Float.tau) * (0.10 + 0.10 * run)
+        let sway: Float = sinf(cyc) * 0.022 * (1 - 0.5 * run)
+        p.hipsOffset = Vec3(sway, -drop, 0)
+        p.hipsPitch = 0.04 + run * 0.20
+        p.hipsRoll = -sinf(cyc) * 0.05
+        let twist: Float = sinf(cyc) * (0.12 + 0.12 * run)
         p.hipsYaw = twist
-        p.spineYaw = -twist * 1.4
-        p.spinePitch = 0.03 + run * 0.10
-        p.headPitch = -(0.05 + run * 0.20)
-        p.headYaw = twist * 0.5
+        p.spineYaw = -twist * 1.6
+        p.spineRoll = sinf(cyc) * 0.03
+        p.spinePitch = 0.02 + run * 0.10
+        p.headPitch = -(0.04 + run * 0.20)
+        p.headYaw = twist * 0.6
+        // lean into turns
+        let turnLean: Float = clampf(-turnRate * 0.05, -0.14, 0.14) * clampf(speed / 3, 0, 1)
+        p.hipsRoll += turnLean
+        p.spineRoll += turnLean * 0.6
 
         for side in 0..<2 {
             let left: Bool = side == 0
@@ -245,40 +269,73 @@ final class PlayerCharacter: CameraController {
             var z: Float = 0
             var lift: Float = 0
             if ph < 0.5 {
-                let u: Float = ph / 0.5
-                z = lerpf(amp, -amp, u)
+                // stance: the planted foot travels back at body speed
+                z = lerpf(amp, -amp, ph / 0.5)
             } else {
+                // swing: lift off, pass under the body, reach forward and touch down
                 let u: Float = (ph - 0.5) / 0.5
                 z = lerpf(-amp, amp, smoothstep(0, 1, u))
-                lift = sinf(u * Float.pi)
+                lift = powf(sinf(u * Float.pi), 0.8)
             }
-            let x: Float = left ? 0.105 : -0.105
-            let target = Vec3(x, ankle + lift * stepH, -0.04 + z)
-            var pitch: Float = -0.10
-            if ph < 0.5 { pitch = -0.12 + 0.75 * smoothstep(0.30, 0.50, ph) } else { pitch = 0.6 * (1 - smoothstep(0.5, 0.68, ph)) - 0.20 * smoothstep(0.8, 1.0, ph) }
-            if left { p.leftFoot = target; p.leftFootPitch = pitch } else { p.rightFoot = target; p.rightFootPitch = pitch }
+            // foot roll: heel strike (toes up) -> flat -> heel lifts, toes push off
+            var pitch: Float = 0
+            if ph < 0.5 {
+                let u: Float = ph / 0.5
+                pitch = -0.28 * (1 - smoothstep(0, 0.22, u)) + 0.70 * smoothstep(0.62, 1.0, u)
+            } else {
+                let u: Float = (ph - 0.5) / 0.5
+                pitch = 0.55 * (1 - smoothstep(0, 0.35, u)) - 0.22 * smoothstep(0.6, 1.0, u)
+            }
+            // ankle height follows the foot roll so the sole stays on the ground / the toes leave it
+            let roll: Float = 0.12 * sinf(max(0, pitch)) + 0.05 * sinf(max(0, -pitch))
+            let x: Float = left ? 0.095 : -0.095
+            let target = Vec3(x, ankle + roll + lift * stepH, -0.03 + z)
+            if left {
+                p.leftFoot = target
+                p.leftFootPitch = pitch
+            } else {
+                p.rightFoot = target
+                p.rightFootPitch = pitch
+            }
         }
 
-        // arms swing opposite to the legs
-        let swing: Float = 0.16 + 0.30 * run
-        let handY: Float = lerpf(1.02, 1.28, run) - drop
-        let handZ0: Float = lerpf(0.02, 0.30, run)
-        let lz: Float = handZ0 - sinf(gaitPhase * Float.tau) * swing
-        let rz: Float = handZ0 + sinf(gaitPhase * Float.tau) * swing
-        let handX: Float = lerpf(0.30, 0.26, run)
-        p.leftHand = Vec3(handX, handY + max(0, -sinf(gaitPhase * Float.tau)) * 0.05 * run, lz)
-        p.rightHand = Vec3(-handX, handY + max(0, sinf(gaitPhase * Float.tau)) * 0.05 * run, rz)
-        p.leftElbowPole = Vec3(0.5, -0.1, -0.9)
-        p.rightElbowPole = Vec3(-0.5, -0.1, -0.9)
-        p.fingerCurl = 0.35 + 0.4 * run
+        // arms swing against the legs; elbows bend more when running
+        let swing: Float = 0.14 + 0.30 * run
+        let handY: Float = lerpf(1.00, 1.24, run) - drop
+        let handZ0: Float = lerpf(0.03, 0.26, run)
+        let handX: Float = lerpf(0.29, 0.25, run)
+        let sL: Float = -sinf(cyc)
+        let sR: Float = sinf(cyc)
+        p.leftHand = Vec3(handX, handY + max(0, sL) * 0.06 * run, handZ0 + sL * swing)
+        p.rightHand = Vec3(-handX, handY + max(0, sR) * 0.06 * run, handZ0 + sR * swing)
+        p.leftElbowPole = Vec3(0.55, -0.15, -0.9)
+        p.rightElbowPole = Vec3(-0.55, -0.15, -0.9)
+        p.fingerCurl = 0.35 + 0.45 * run
         p.thumbCurl = 0.2
-        sv.apply(p)
+        return p
+    }
+
+    private func applyLocomotionPose(dt: Float) {
+        guard let sv = solver else { return }
+        // smooth idle <-> moving transition (no pop when starting / stopping)
+        let target: Float = speed > 0.12 ? 1 : 0
+        locoBlend = damp(locoBlend, target, 9, max(dt, 0.0001))
+        if locoBlend < 0.01 {
+            applyIdlePose(dt: dt)
+            return
+        }
+        let loco: WPoseParams = locomotionParams(sv, dt: dt)
+        if locoBlend > 0.99 {
+            sv.apply(loco)
+        } else {
+            sv.apply(idleParams(sv).blended(with: loco, t: smoothstep(0, 1, locoBlend)))
+        }
 
         // footsteps when a foot plants
         let halfNow: Int = Int(floorf(gaitPhase * 2))
         if halfNow != stepIndex {
             stepIndex = halfNow
-            playFootstep()
+            if speed > 0.3 { playFootstep() }
         }
     }
 

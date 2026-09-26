@@ -8,7 +8,7 @@ import simd
 // destruction animation + sound + dust and removes the collider (ColliderWorld.strike -> worldStrike).
 
 enum WPropKind: Int {
-    case lamp, tree, sign, signal, bench
+    case lamp, tree, sign, signal, bench, hydrant, bin
 }
 
 struct WProp {
@@ -54,6 +54,19 @@ final class WPropSystem: WColliderStrikeHandler {
     private var particlesOn = true
     private var dustImage: UIImage?
     private var hasTreeModels = true
+    private var freeProps: [Int] = []
+    // street furniture (flat, lit colours; merged into the chunk's prop geometry)
+    private let hydrantMat: SCNMaterial = WPropSystem.flat(0.62, 0.12, 0.09)
+    private let hydrantCapMat: SCNMaterial = WPropSystem.flat(0.55, 0.56, 0.58)
+    private let binMat: SCNMaterial = WPropSystem.flat(0.16, 0.24, 0.20)
+    private let binLidMat: SCNMaterial = WPropSystem.flat(0.10, 0.11, 0.12)
+
+    private static func flat(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> SCNMaterial {
+        let m = SCNMaterial()
+        m.lightingModel = SCNMaterial.LightingModel.lambert
+        m.diffuse.contents = UIColor(red: r, green: g, blue: b, alpha: 1)
+        return m
+    }
 
     init(ctx: GameContext, layout: WCityLayout, mats: WorldMaterials, colliders: ColliderWorld, worldRoot: SCNNode) {
         self.ctx = ctx
@@ -74,28 +87,33 @@ final class WPropSystem: WColliderStrikeHandler {
 
     private func chunkKey(_ p: Vec2) -> Int { return wChunkKey(wChunkCoord(p.x), wChunkCoord(p.y)) }
 
-    private func add(_ kind: WPropKind, _ pos: Vec2, _ heading: Float, _ scale: Float, _ variant: Int) {
-        let key: Int = chunkKey(pos)
-        let i: Int = props.count
-        var cid: Int = -1
+    /// registers the collider of a prop of `kind` and returns its id
+    private func makeCollider(_ kind: WPropKind, _ pos: Vec2, _ heading: Float, _ scale: Float) -> Int {
+        let cid: Int = colliders.allocateID()
         switch kind {
         case .lamp:
-            cid = colliders.allocateID()
             colliders.add(Collider.circle(id: cid, kind: ColliderKind.lamp, center: pos, radius: 0.24, destructible: true, height: 8.2, mass: 260))
         case .sign:
-            cid = colliders.allocateID()
             colliders.add(Collider.circle(id: cid, kind: ColliderKind.sign, center: pos, radius: 0.16, destructible: true, height: 3.0, mass: 40))
         case .tree:
-            cid = colliders.allocateID()
             let r: Float = max(0.32, 0.46 * scale)
             colliders.add(Collider.circle(id: cid, kind: ColliderKind.tree, center: pos, radius: r, destructible: true, height: 6.8 * scale, mass: 2600 * scale))
         case .signal:
-            cid = colliders.allocateID()
             colliders.add(Collider.circle(id: cid, kind: ColliderKind.prop, center: pos, radius: 0.26, destructible: false, height: 4.8, mass: 400))
         case .bench:
-            cid = colliders.allocateID()
             colliders.add(Collider.box(id: cid, kind: ColliderKind.prop, center: pos, halfExtents: Vec2(0.95, 0.32), heading: heading, height: 0.9, mass: 120))
+        case .hydrant:
+            colliders.add(Collider.circle(id: cid, kind: ColliderKind.prop, center: pos, radius: 0.22, destructible: false, height: 0.8, mass: 400))
+        case .bin:
+            colliders.add(Collider.circle(id: cid, kind: ColliderKind.prop, center: pos, radius: 0.30, destructible: false, height: 1.0, mass: 120))
         }
+        return cid
+    }
+
+    private func add(_ kind: WPropKind, _ pos: Vec2, _ heading: Float, _ scale: Float, _ variant: Int) {
+        let key: Int = chunkKey(pos)
+        let i: Int = props.count
+        let cid: Int = makeCollider(kind, pos, heading, scale)
         props.append(WProp(id: i, kind: kind, pos: pos, heading: heading, scale: scale, variant: variant, alive: true, colliderID: cid, chunk: key))
         if byChunk[key] == nil { byChunk[key] = [i] } else { byChunk[key]!.append(i) }
         if cid >= 0 { propByCollider[cid] = i }
@@ -116,7 +134,7 @@ final class WPropSystem: WColliderStrikeHandler {
     }
 
     private func blocked(_ p: Vec2, _ road: WRoad, margin: Float) -> Bool {
-        if abs(p.x) > 1480 || abs(p.y) > 1480 { return true }
+        if abs(p.x) > 1530 || abs(p.y) > 1530 { return true }
         if layout.index.insideAsphalt(p, excluding: road.id, margin: margin) { return true }
         if layout.insidePlot(p, margin: 3) { return true }
         return false
@@ -195,7 +213,7 @@ final class WPropSystem: WColliderStrikeHandler {
     }
 
     private func placeIntersections(_ dens: Float) {
-        let n = WC.gridN
+        let n = WC.roadN
         for a in -n...n {
             for b in -n...n {
                 let clsA = WCityLayout.gridClass(a)
@@ -204,8 +222,19 @@ final class WPropSystem: WColliderStrikeHandler {
                 let hz: Float = WRoad.dimensions(clsB).half
                 let centre = Vec2(Float(a) * WC.pitch, Float(b) * WC.pitch)
                 let major: Bool = clsA != WRoadClass.street && clsB != WRoadClass.street
+                // no intersection exists where the hillside suburb keeps the grid out
+                if a >= 9 && b >= 1 && b <= 5 { continue }
                 for sx in [Float(-1), Float(1)] {
                     for sz in [Float(-1), Float(1)] {
+                        // street furniture: fire hydrants and litter bins along the sidewalks near the corners
+                        let fr: Float = wHash01(a + 60, b + 60, Int(sx * 7 + sz * 11 + 40))
+                        if fr < 0.20 * dens {
+                            let hp = centre + Vec2(sx * (hx + 1.3), sz * (hz + 9.0))
+                            if !layout.index.insideAsphalt(hp, excluding: -1, margin: 0.8) { add(WPropKind.hydrant, hp, 0, 1, 0) }
+                        } else if fr > 0.84 {
+                            let bp = centre + Vec2(sx * (hx + 3.4), sz * (hz + 6.5))
+                            if !layout.index.insideAsphalt(bp, excluding: -1, margin: 0.8) { add(WPropKind.bin, bp, 0, 1, 0) }
+                        }
                         let p = centre + Vec2(sx * (hx + 2.2), sz * (hz + 2.2))
                         if layout.index.insideAsphalt(p, excluding: -1, margin: 0.5) { continue }
                         let faceX: Bool = sx * sz > 0
@@ -290,6 +319,8 @@ final class WPropSystem: WColliderStrikeHandler {
         case .sign: emitSign(set, xf, p.variant)
         case .signal: emitSignal(set, xf, p.variant)
         case .bench: emitBench(set, xf)
+        case .hydrant: emitHydrant(set, xf)
+        case .bin: emitBin(set, xf)
         case .tree: break
         }
     }
@@ -342,6 +373,23 @@ final class WPropSystem: WColliderStrikeHandler {
         }
     }
 
+    private func emitHydrant(_ set: WMeshSet, _ xf: WXform) {
+        let body = set.mesh(hydrantMat)
+        let cap = set.mesh(hydrantCapMat)
+        body.cylinder(base: Vec3(0, 0, 0), radiusBottom: 0.17, radiusTop: 0.15, height: 0.62, segments: 8, u: 0.5, v: 0.5, capTop: true, xf: xf)
+        body.box(center: Vec3(0.20, 0.42, 0), size: Vec3(0.16, 0.13, 0.13), u: 0.5, v: 0.5, xf: xf)
+        body.box(center: Vec3(-0.20, 0.42, 0), size: Vec3(0.16, 0.13, 0.13), u: 0.5, v: 0.5, xf: xf)
+        cap.cylinder(base: Vec3(0, 0.62, 0), radiusBottom: 0.19, radiusTop: 0.10, height: 0.12, segments: 8, u: 0.5, v: 0.5, capTop: true, xf: xf)
+        cap.box(center: Vec3(0, 0.25, 0.17), size: Vec3(0.12, 0.12, 0.06), u: 0.5, v: 0.5, xf: xf)
+    }
+
+    private func emitBin(_ set: WMeshSet, _ xf: WXform) {
+        let body = set.mesh(binMat)
+        let lid = set.mesh(binLidMat)
+        body.cylinder(base: Vec3(0, 0, 0), radiusBottom: 0.27, radiusTop: 0.31, height: 0.9, segments: 10, u: 0.5, v: 0.5, capTop: false, xf: xf)
+        lid.cylinder(base: Vec3(0, 0.9, 0), radiusBottom: 0.33, radiusTop: 0.29, height: 0.09, segments: 10, u: 0.5, v: 0.5, capTop: true, xf: xf)
+    }
+
     private func emitBench(_ set: WMeshSet, _ xf: WXform) {
         let m = set.mesh(mats.propsDead)
         let wood = atlas(3)
@@ -386,6 +434,77 @@ final class WPropSystem: WColliderStrikeHandler {
             treeList.append(inst)
             setLOD(inst, 2)
         }
+    }
+
+    // MARK: endless world: copies of a source chunk's props at an offset (one clone chunk = one entry of `byChunk`)
+
+    /// Re-creates the props of base chunk `sourceKey` shifted by `offset` inside `chunkNode` (world coordinates, chunk node at the origin):
+    /// merged lamp / sign / bench geometry, individual tree nodes with LOD, and destructible colliders.
+    func makeCloneProps(sourceKey: Int, offset: Vec2, cloneKey: Int, chunkNode: SCNNode) {
+        guard let list = byChunk[sourceKey] else { return }
+        var made: [Int] = []
+        for si in list {
+            let src: WProp = props[si]
+            let pos: Vec2 = src.pos + offset
+            let cid: Int = makeCollider(src.kind, pos, src.heading, src.scale)
+            let p = WProp(id: 0, kind: src.kind, pos: pos, heading: src.heading, scale: src.scale, variant: src.variant, alive: true, colliderID: cid, chunk: cloneKey)
+            var idx: Int
+            if let f = freeProps.popLast() {
+                idx = f
+                var q: WProp = p
+                q.id = idx
+                props[idx] = q
+            } else {
+                idx = props.count
+                var q: WProp = p
+                q.id = idx
+                props.append(q)
+            }
+            propByCollider[cid] = idx
+            made.append(idx)
+        }
+        byChunk[cloneKey] = made
+        let node = SCNNode()
+        node.name = "props"
+        node.geometry = mergedGeometry(chunk: cloneKey)
+        node.castsShadow = true
+        chunkNode.addChildNode(node)
+        chunkPropNodes[cloneKey] = node
+        for i in made where props[i].kind == WPropKind.tree {
+            let inst = WTreeInstance(propIndex: i)
+            let p: WProp = props[i]
+            inst.container.simdPosition = Vec3(p.pos.x, 0, p.pos.y)
+            inst.holder.simdEulerAngles = Vec3(0, p.heading, 0)
+            inst.holder.simdScale = Vec3(p.scale, p.scale, p.scale)
+            inst.container.addChildNode(inst.holder)
+            chunkNode.addChildNode(inst.container)
+            trees[i] = inst
+            treeList.append(inst)
+            setLOD(inst, 2)
+        }
+    }
+
+    /// removes a clone chunk's colliders and bookkeeping (its node is removed by the caller)
+    func releaseCloneProps(cloneKey: Int) {
+        guard let list = byChunk[cloneKey] else { return }
+        var gone = Set<Int>()
+        for i in list {
+            let p: WProp = props[i]
+            if p.colliderID >= 0 {
+                colliders.remove(id: p.colliderID)
+                propByCollider[p.colliderID] = nil
+            }
+            props[i].alive = false
+            props[i].colliderID = -1
+            if trees[i] != nil {
+                trees[i] = nil
+                gone.insert(i)
+            }
+            freeProps.append(i)
+        }
+        if !gone.isEmpty { treeList.removeAll(where: { gone.contains($0.propIndex) }) }
+        byChunk[cloneKey] = nil
+        chunkPropNodes[cloneKey] = nil
     }
 
     // MARK: tree LOD

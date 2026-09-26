@@ -197,11 +197,13 @@ final class RaceManager {
         hud.finished = false
         ctx.state.race = hud
         phase = .countdown
+        ctx.world.setStartLights(red: 1, green: false)
         ctx.audio.play(SFX.countdownBeep, volume: 1, rate: 1, position: nil)
     }
 
     func stop() {
         phase = .idle
+        ctx.world.setStartLights(red: 0, green: false)
         for o in opponents {
             o.node.isHidden = true
             o.driver = nil
@@ -237,6 +239,7 @@ final class RaceManager {
                     lastCountShown = n
                     hud.countdown = n
                     ctx.state.race = hud
+                    ctx.world.setStartLights(red: 4 - n, green: false)
                     ctx.audio.play(SFX.countdownBeep, volume: 1, rate: 1, position: nil)
                 }
             }
@@ -248,6 +251,7 @@ final class RaceManager {
                 if goShown <= 0 {
                     hud.countdown = nil
                     ctx.state.race = hud
+                    ctx.world.setStartLights(red: 0, green: false)
                 }
             }
             updateOpponents(d, racing: true, car: car, path: p)
@@ -272,6 +276,7 @@ final class RaceManager {
         lapStartClock = 0
         hud.countdown = 0
         goShown = 1.0
+        ctx.world.setStartLights(red: 0, green: true)
         car.holdBrake = false
         car.controlOverride = nil
         ctx.state.race = hud

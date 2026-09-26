@@ -262,7 +262,7 @@ final class WRoadBuilder {
         }
 
         // crosswalks + stop lines at grid intersections
-        let n = WC.gridN
+        let n = WC.roadN
         let aMin = Int(ceilf(rect.x0 / WC.pitch))
         let aMax = Int(ceilf(rect.x1 / WC.pitch)) - 1
         let bMin = Int(ceilf(rect.z0 / WC.pitch))
@@ -271,6 +271,7 @@ final class WRoadBuilder {
             for a in aMin...aMax {
                 for b in bMin...bMax {
                     if abs(a) > n || abs(b) > n { continue }
+                    if a >= 9 && b >= 1 && b <= 5 { continue }          // no intersection where the suburb keeps the grid out
                     crosswalks(a, b, whiteM)
                 }
             }
@@ -303,9 +304,11 @@ final class WRoadBuilder {
     }
 
     private func crosswalks(_ a: Int, _ b: Int, _ paint: WMesh) {
-        let n = WC.gridN
+        let n = WC.roadN
         let centre = Vec2(Float(a) * WC.pitch, Float(b) * WC.pitch)
-        let arms: [(Vec2, Bool, Int)] = [(Vec2(1, 0), a < n, b), (Vec2(-1, 0), a > -n, b), (Vec2(0, 1), b < n, a), (Vec2(0, -1), b > -n, a)]
+        // the streets z = 140 ... 700 end at x = 1120 (only the two hill entrances at z = 280 / 700 continue as suburb roads)
+        let eastExists: Bool = !(a == 8 && b >= 1 && b <= 5 && b != 2 && b != 5)
+        let arms: [(Vec2, Bool, Int)] = [(Vec2(1, 0), a < n && eastExists, b), (Vec2(-1, 0), a > -n, b), (Vec2(0, 1), b < n, a), (Vec2(0, -1), b > -n, a)]
         for arm in arms {
             if !arm.1 { continue }
             let u = arm.0

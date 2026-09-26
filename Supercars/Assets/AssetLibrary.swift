@@ -88,9 +88,9 @@ final class AssetLibrary {
     }
 
     /// Resources/Models/<name>.glb -> NEW node hierarchy each call (geometry + materials shared, skins re-bound per instance).
-    func model(_ name: String) throws -> SCNNode {
+    func model(_ name: String, uniqueGeometry: Bool = false) throws -> SCNNode {
         let a: GLBAsset = try asset(named: name)
-        return a.instantiate()
+        return a.instantiate(uniqueGeometry: uniqueGeometry)
     }
 
     /// Parses (off the main thread) and caches models without instantiating them.

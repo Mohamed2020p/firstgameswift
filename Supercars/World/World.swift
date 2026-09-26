@@ -18,6 +18,21 @@ final class WChunk {
     var center: Vec2 { return rect.center }
 }
 
+/// one streamed copy of a base chunk (endless world)
+@MainActor
+final class WCloneChunk {
+    let key: Int
+    let node: SCNNode
+    let colliderIDs: [Int]
+    let center: Vec2
+    init(key: Int, node: SCNNode, colliderIDs: [Int], center: Vec2) {
+        self.key = key
+        self.node = node
+        self.colliderIDs = colliderIDs
+        self.center = center
+    }
+}
+
 @MainActor
 final class World {
     let root = SCNNode()
@@ -26,6 +41,8 @@ final class World {
     private(set) var spawn: SpawnPoints
     private(set) var raceRoutes: [RaceRoute] = []
     var timeOfDay: Float = 9
+    /// read-only access for the navigation, NPC and traffic systems
+    var cityLayout: WCityLayout { return layout }
 
     private unowned let ctx: GameContext
     private let layout = WCityLayout()
@@ -35,12 +52,19 @@ final class World {
     private var propSystem: WPropSystem!
     private var roadBuilder: WRoadBuilder!
     private var chunks: [WChunk] = []
+    private var baseChunks: [Int: WChunk] = [:]
+    private var farGround: SCNNode? = nil
+    private var cloneRoot = SCNNode()
+    private var clones: [Int: WCloneChunk] = [:]
+    private var cloneFocus = Vec2(1e9, 1e9)
+    private var cloneTimer: Float = 0
     private var minimapData = MinimapData()
     private var interior = false
     private var visTimer: Float = 0
     private var lastVisFocus = Vec2(1e9, 1e9)
     private var cancellables = Set<AnyCancellable>()
     private var built = false
+    let features = WCityFeatures()
 
     init(ctx: GameContext) {
         self.ctx = ctx
@@ -117,6 +141,8 @@ final class World {
         progress(0.95, "Finishing touches…")
         buildFarGround()
         buildGate()
+        features.build(layout: layout, colliders: colliders, gate: spawn.raceGate, routeWidth: raceRoutes.first?.width ?? 16, assets: ctx.assets)
+        root.addChildNode(features.root)
         buildMinimap()
         applyGraphics(ctx.settings.settings.graphics)
         sky.update(t: timeOfDay, focus: spawn.house.position, camera: spawn.house.position + Vec3(0, 3, 0), dt: 0)
@@ -231,32 +257,41 @@ final class World {
         propSystem.makeChunkContent(key: key, chunkNode: chunk.node)
         root.addChildNode(chunk.node)
         chunks.append(chunk)
+        baseChunks[key] = chunk
     }
 
     private func buildFarGround() {
+        // a big plane that follows the player in whole texture tiles, so the ground never ends
         let set = WMeshSet()
-        set.mesh(mats.ground).groundRect(-7000, -7000, 7000, 7000, y: -0.06, tile: 24)
-        addLayer(set, to: root, order: -70, shadows: false, name: "farGround")
+        set.mesh(mats.ground).groundRect(-7200, -7200, 7200, 7200, y: -0.06, tile: 24)
+        guard let g = set.makeGeometry() else { return }
+        let n = SCNNode(geometry: g)
+        n.name = "farGround"
+        n.renderingOrder = -70
+        n.castsShadow = false
+        root.addChildNode(n)
+        farGround = n
     }
 
     // MARK: race gate
 
     private func gateBanner() -> UIImage {
         return WTex.render(1024, 128, opaque: true) { c in
-            c.setFillColor(WTex.col(0.02, 0.03, 0.05))
+            c.setFillColor(WTex.col(0.10, 0.11, 0.13))
             c.fill(CGRect(x: 0, y: 0, width: 1024, height: 128))
-            c.setFillColor(WTex.col(0.22, 1.0, 0.53))
-            c.fill(CGRect(x: 0, y: 0, width: 1024, height: 8))
-            c.setFillColor(WTex.col(1.0, 0.17, 0.84))
-            c.fill(CGRect(x: 0, y: 120, width: 1024, height: 8))
+            c.setFillColor(WTex.col(0.78, 0.66, 0.44))
+            c.fill(CGRect(x: 0, y: 0, width: 1024, height: 6))
+            c.setFillColor(WTex.col(0.86, 0.88, 0.90))
+            c.fill(CGRect(x: 0, y: 122, width: 1024, height: 6))
             let para = NSMutableParagraphStyle()
             para.alignment = .center
             let attrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 74, weight: UIFont.Weight.heavy),
-                .foregroundColor: UIColor(red: 0.22, green: 1.0, blue: 0.53, alpha: 1),
-                .paragraphStyle: para
+                .font: UIFont.systemFont(ofSize: 70, weight: UIFont.Weight.semibold),
+                .foregroundColor: UIColor(white: 0.95, alpha: 1),
+                .paragraphStyle: para,
+                .kern: 6
             ]
-            ("SUPERCARS GP  •  c0derz" as NSString).draw(in: CGRect(x: 0, y: 22, width: 1024, height: 92), withAttributes: attrs)
+            ("SUPERCARS GRAND PRIX" as NSString).draw(in: CGRect(x: 0, y: 24, width: 1024, height: 90), withAttributes: attrs)
         }
     }
 
@@ -283,7 +318,7 @@ final class World {
 
         let pillarMat: SCNMaterial = MaterialFactory.pbr(color: UIColor(white: 0.16, alpha: 1), metalness: 0.4, roughness: 0.5, name: "gatePillar")
         let banner: UIImage = gateBanner()
-        let bannerMat: SCNMaterial = MaterialFactory.texturedEmissive(banner, emission: banner, emissionIntensity: 0.65, metalness: 0, roughness: 0.6, name: "gateBanner")
+        let bannerMat: SCNMaterial = MaterialFactory.texturedEmissive(banner, emission: banner, emissionIntensity: 0.10, metalness: 0, roughness: 0.6, name: "gateBanner")
         let side: Float = w * 0.5 + 1.6
         for sx in [Float(-1), Float(1)] {
             let box = SCNBox(width: 0.9, height: 8, length: 0.9, chamferRadius: 0.05)
@@ -323,8 +358,9 @@ final class World {
 
     private func buildMinimap() {
         var mm = MinimapData()
-        mm.boundsMin = Vec2(-1500, -1500)
-        mm.boundsMax = Vec2(1500, 1500)
+        mm.boundsMin = Vec2(-1540, -1540)
+        mm.boundsMax = Vec2(1540, 1540)
+        mm.tilePeriod = Float(WC.tileLines) * WC.pitch
         var lines: [[Vec2]] = []
         for r in layout.roads {
             var pts: [Vec2] = r.points
@@ -344,6 +380,23 @@ final class World {
             lines.append(pts)
         }
         mm.roads = lines
+        var districts: [MapDistrict] = []
+        for (k, b) in layout.blocks.enumerated() {
+            var kind: String = "residential"
+            var name: String = "Residential"
+            switch b.kind {
+            case .downtown: kind = "downtown"; name = "Downtown"
+            case .midrise: kind = "midrise"; name = "Midtown"
+            case .residential:
+                if b.i >= 1 && b.j >= 1 { kind = "luxury"; name = "Luxury Residential" } else { kind = "residential"; name = "Residential" }
+            case .industrial: kind = "industrial"; name = "Industrial District"
+            case .park: kind = "park"; name = "City Park"
+            case .plaza: kind = "plaza"; name = "City Plaza"
+            case .civic: kind = "civic"; name = "Civic Centre"
+            }
+            districts.append(MapDistrict(id: k, name: name, kind: kind, rect: b.rect))
+        }
+        mm.districts = districts
         if let route = raceRoutes.first {
             var pts: [Vec2] = []
             var i = 0
@@ -360,6 +413,21 @@ final class World {
 
     func minimap() -> MinimapData { return minimapData }
 
+    // MARK: places (see WCityFeatures)
+
+    var taxiStops: [PedTaxiStop] { return features.taxiStops }
+
+    func registerWaypoints(into registry: WaypointRegistry, spawn sp: SpawnPoints) {
+        features.registerWaypoints(into: registry, spawn: sp, layout: layout)
+    }
+
+    func setWeather(_ w: WeatherKind) { sky.setWeather(w) }
+
+    /// starting lights over the race gate: `red` lit red discs (0...3), then the green one
+    func setStartLights(red: Int, green: Bool) {
+        features.setStartLights(red: red, green: green)
+    }
+
     // MARK: per frame
 
     func update(dt: Float, focus: Vec3) {
@@ -368,14 +436,21 @@ final class World {
         if timeOfDay >= 24 { timeOfDay -= 24 }
         if timeOfDay < 0 { timeOfDay += 24 }
         let cam: Vec3 = ctx.cameraRig.node.simdPosition
+        followFarGround(focus)
         sky.update(t: timeOfDay, focus: focus, camera: cam, dt: dt)
         mats.setNight(sky.night)
         mats.setBeacon(sky.night > 0.4)
         propSystem.update(dt: dt, focus: focus)
+        features.update(dt: dt, focus: Vec2(focus.x, focus.z))
         visTimer -= dt
         if visTimer <= 0 {
             visTimer = 0.4
             updateVisibility(focus: focus, force: false)
+        }
+        cloneTimer -= dt
+        if cloneTimer <= 0 {
+            cloneTimer = 0.15
+            streamClones(focus: Vec2(focus.x, focus.z), budget: 6)
         }
     }
 
@@ -383,6 +458,7 @@ final class World {
         let f = Vec2(focus.x, focus.z)
         if !force && simd_length(f - lastVisFocus) < 12 { return }
         lastVisFocus = f
+        cloneFocus = Vec2(1e9, 1e9)          // the streaming pass below re-evaluates
         let dd: Float = ctx.settings.settings.graphics.drawDistance
         var radius: Float = 430 * dd
         if interior { radius = 85 }
@@ -396,17 +472,114 @@ final class World {
     func setInteriorMode(_ on: Bool) {
         if interior == on { return }
         interior = on
+        cloneRoot.isHidden = on
         lastVisFocus = Vec2(1e9, 1e9)
     }
 
+    // MARK: endless world
+    // The city island (chunks -11 ... 10) repeats in every direction.  Chunks outside it are copies of a source chunk: the static layers
+    // (ground, roads, buildings) are cloned nodes that share the geometry, props / trees / colliders are re-created at the offset.
+    // They are streamed around the player and released again behind him.
+
+    private func wrapChunk(_ c: Int) -> Int {
+        let n: Int = WC.tileChunks
+        var m: Int = (c + n / 2) % n
+        if m < 0 { m += n }
+        return m - n / 2
+    }
+
+    private func followFarGround(_ focus: Vec3) {
+        guard let g = farGround else { return }
+        let step: Float = 240                      // a whole number of 24 m texture tiles
+        let x: Float = (focus.x / step).rounded() * step
+        let z: Float = (focus.z / step).rounded() * step
+        if g.simdPosition.x != x || g.simdPosition.z != z { g.simdPosition = Vec3(x, 0, z) }
+    }
+
+    /// creates the missing clone chunks near `focus` (a few per call) and releases the far ones
+    func streamClones(focus: Vec2, budget: Int) {
+        let dd: Float = ctx.settings.settings.graphics.drawDistance
+        let radius: Float = (interior ? 85 : 430 * dd) + WC.chunk * 0.75
+        let reach: Int = Int(ceilf(radius / WC.chunk)) + 1
+        let cx0: Int = wChunkCoord(focus.x)
+        let cz0: Int = wChunkCoord(focus.y)
+        var created: Int = 0
+        let lo: Int = -WC.tileChunks / 2
+        let hi: Int = WC.tileChunks / 2 - 1
+        if cloneRoot.parent == nil {
+            cloneRoot.name = "clones"
+            root.addChildNode(cloneRoot)
+        }
+        var wanted = Set<Int>()
+        var order: [(Int, Int, Float)] = []
+        for dx in -reach...reach {
+            for dz in -reach...reach {
+                let cx: Int = cx0 + dx
+                let cz: Int = cz0 + dz
+                if cx >= lo && cx <= hi && cz >= lo && cz <= hi { continue }      // inside the base island
+                let centre = Vec2((Float(cx) + 0.5) * WC.chunk, (Float(cz) + 0.5) * WC.chunk)
+                let d: Float = simd_length(centre - focus)
+                if d > radius + WC.chunk * 0.7 { continue }
+                wanted.insert(wChunkKey(cx, cz))
+                if clones[wChunkKey(cx, cz)] == nil { order.append((cx, cz, d)) }
+            }
+        }
+        order.sort { $0.2 < $1.2 }
+        for o in order {
+            if created >= budget { break }
+            makeClone(cx: o.0, cz: o.1)
+            created += 1
+        }
+        // release what is far behind
+        var drop: [Int] = []
+        for (key, c) in clones where !wanted.contains(key) {
+            if simd_length(c.center - focus) > radius + WC.chunk * 2.2 { drop.append(key) }
+        }
+        for key in drop { removeClone(key) }
+    }
+
+    private func makeClone(cx: Int, cz: Int) {
+        let key: Int = wChunkKey(cx, cz)
+        let sx: Int = wrapChunk(cx)
+        let sz: Int = wrapChunk(cz)
+        let srcKey: Int = wChunkKey(sx, sz)
+        guard let src = baseChunks[srcKey] else { return }
+        let off = Vec2(Float(cx - sx) * WC.chunk, Float(cz - sz) * WC.chunk)
+        let node = SCNNode()
+        node.name = "clone_\(cx)_\(cz)"
+        for child in src.node.childNodes {
+            guard let nm = child.name else { continue }
+            if nm == "props" { continue }
+            if child.geometry == nil { continue }               // tree containers and other loose nodes are re-created below
+            let c: SCNNode = child.clone()
+            c.simdPosition = c.simdPosition + Vec3(off.x, 0, off.y)
+            node.addChildNode(c)
+        }
+        propSystem.makeCloneProps(sourceKey: srcKey, offset: off, cloneKey: key, chunkNode: node)
+        let ids: [Int] = buildings.cloneColliders(sourceKey: srcKey, offset: off)
+        cloneRoot.addChildNode(node)
+        clones[key] = WCloneChunk(key: key, node: node, colliderIDs: ids, center: Vec2((Float(cx) + 0.5) * WC.chunk, (Float(cz) + 0.5) * WC.chunk))
+    }
+
+    private func removeClone(_ key: Int) {
+        guard let c = clones[key] else { return }
+        propSystem.releaseCloneProps(cloneKey: key)
+        for id in c.colliderIDs { colliders.remove(id: id) }
+        c.node.removeFromParentNode()
+        clones[key] = nil
+    }
+
+    var cloneCount: Int { return clones.count }
+
     // MARK: queries
 
-    func surface(at p: Vec2) -> SurfaceType { return layout.surface(at: p) }
+    func surface(at p: Vec2) -> SurfaceType { return layout.surface(at: WGrid.wrap(p)) }
 
     func groundHeight(at p: Vec2) -> Float { return 0 }
 
     func nearestRoadPoint(to p: Vec2) -> (point: Vec2, heading: Float)? {
-        guard let hit = layout.index.nearest(p, maxDist: 80) else { return nil }
-        return (hit.point, headingOf(hit.dir))
+        let q: Vec2 = WGrid.wrap(p)
+        guard let hit = layout.index.nearest(q, maxDist: 80) else { return nil }
+        return (hit.point + (p - q), headingOf(hit.dir))
     }
 }

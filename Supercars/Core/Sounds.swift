@@ -9,7 +9,7 @@ enum SFX: String, CaseIterable {
     case tyreSkidAsphalt, tyreSkidGrass, kerbRumble, gravelRoll
     case crashMetalLight, crashMetalHeavy, crashGlass, scrape
     case lampBend, lampFall, treeCrack, treeFall, leavesRustle, signClang, debrisTumble
-    case carDoorOpen, carDoorClose, seatbelt
+    case carDoorOpen, carDoorClose, seatbelt, policeSiren
     // on foot / house
     case footConcrete1, footConcrete2, footConcrete3, footGrass1, footGrass2, footWood1, footWood2, footWood3
     case doorOpen, doorClose, garageDoorMotor, liftMotor, bedRustle, sleepChime, lightSwitch, cashRegister, wrenchRatchet
